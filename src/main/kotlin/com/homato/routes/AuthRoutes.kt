@@ -24,7 +24,9 @@ fun Route.register() {
             return@post
         }
 
-        when (val result = authService.register(request.email, request.password)) {
+        val result = authService.register(request.email, request.password)
+
+        when (result) {
             is Outcome.Success -> call.respond(HttpStatusCode.Created)
             is Outcome.Failure -> {
                 when (result.error) {
