@@ -1,0 +1,1 @@
+rootProject.name = "com.homato.oddspot-backend"
