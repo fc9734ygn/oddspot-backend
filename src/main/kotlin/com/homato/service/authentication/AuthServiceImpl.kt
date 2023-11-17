@@ -29,12 +29,12 @@ class AuthServiceImpl(
         }
 
         val saltedHash = hashingService.generateSaltedHash(password)
-        val wasAcknowledged = userRepository.insertUser(
+        val inserted = userRepository.insertUser(
             email = email,
             passwordHash = saltedHash.hash,
             salt = saltedHash.salt
         )
-        return if (wasAcknowledged) Outcome.Success(Unit) else Outcome.Failure(RegisterError.UserAlreadyExists)
+        return if (inserted) Outcome.Success(Unit) else Outcome.Failure(RegisterError.UserAlreadyExists)
     }
 
     override suspend fun login(email: String, password: String): Outcome<String, LoginError> {
