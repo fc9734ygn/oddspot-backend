@@ -1,11 +1,14 @@
 package com.homato.routes
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.runCatching
 import com.homato.data.request.AuthRequest
 import com.homato.data.responses.AuthResponse
 import com.homato.service.authentication.AuthService
 import com.homato.service.authentication.LoginError
 import com.homato.service.authentication.RegisterError
-import com.homato.service.util.Outcome
+import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -19,7 +22,8 @@ fun Route.register() {
     val authService: AuthService by inject()
 
     post("register") {
-        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrNull() ?: kotlin.run {
+
+        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }
@@ -27,8 +31,8 @@ fun Route.register() {
         val result = authService.register(request.email, request.password)
 
         when (result) {
-            is Outcome.Success -> call.respond(HttpStatusCode.Created)
-            is Outcome.Failure -> {
+            is Ok -> call.respond(HttpStatusCode.Created)
+            is Err -> {
                 when (result.error) {
                     RegisterError.InvalidEmail -> call.respond(
                         HttpStatusCode.BadRequest, "Invalid email"
@@ -52,7 +56,8 @@ fun Route.login() {
     val authService: AuthService by inject()
 
     post("login") {
-        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrNull() ?: kotlin.run {
+
+        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }
@@ -60,16 +65,16 @@ fun Route.login() {
         val result = authService.login(request.email, request.password)
 
         when (result) {
-            is Outcome.Success -> {
+            is Ok -> {
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = AuthResponse(
-                        token = result.data
+                        token = result.value
                     )
                 )
             }
 
-            is Outcome.Failure -> {
+            is Err -> {
                 when (result.error) {
                     LoginError.UserNotFound -> call.respond(
                         HttpStatusCode.NotFound, "User not found"

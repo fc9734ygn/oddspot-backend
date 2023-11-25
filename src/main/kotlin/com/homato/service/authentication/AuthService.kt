@@ -1,12 +1,16 @@
 package com.homato.service.authentication
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapError
 import com.homato.data.repository.UserRepository
 import com.homato.service.authentication.hashing.HashingService
 import com.homato.service.authentication.hashing.SaltedHash
 import com.homato.service.authentication.token.TokenClaim
 import com.homato.service.authentication.token.TokenConfig
 import com.homato.service.authentication.token.TokenService
-import com.homato.service.util.Outcome
+import com.homato.util.getOrElseNotNull
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
 
@@ -18,28 +22,30 @@ class AuthService(
     private val tokenConfig: TokenConfig
 ) : KoinComponent {
 
-    suspend fun register(email: String, password: String): Outcome<Unit, RegisterError> {
+    suspend fun register(email: String, password: String): Result<Unit, RegisterError> {
         val emailError = SignUpValidator.validateEmail(email)
         if (emailError != null) {
-            return Outcome.Failure(RegisterError.InvalidEmail)
+            return Err(RegisterError.InvalidEmail)
         }
 
         val passwordError = SignUpValidator.validatePassword(password)
         if (passwordError != null) {
-            return Outcome.Failure(RegisterError.InvalidPassword)
+            return Err(RegisterError.InvalidPassword)
         }
 
         val saltedHash = hashingService.generateSaltedHash(password)
-        val inserted = userRepository.insertUser(
+        val result = userRepository.insertUser(
             email = email,
             passwordHash = saltedHash.hash,
             salt = saltedHash.salt
         )
-        return if (inserted) Outcome.Success(Unit) else Outcome.Failure(RegisterError.UserAlreadyExists)
+        return result.mapError { RegisterError.UserAlreadyExists }
     }
 
-    suspend fun login(email: String, password: String): Outcome<String, LoginError> {
-        val user = userRepository.getByEmail(email) ?: return Outcome.Failure(LoginError.UserNotFound)
+    suspend fun login(email: String, password: String): Result<String, LoginError> {
+        val user = userRepository.getByEmail(email).getOrElseNotNull {
+            return Err(LoginError.UserNotFound)
+        }
 
         val isValidPassword = hashingService.verify(
             value = password,
@@ -50,7 +56,7 @@ class AuthService(
         )
 
         if (!isValidPassword) {
-            return Outcome.Failure(LoginError.InvalidCredentials)
+            return Err(LoginError.InvalidCredentials)
         }
 
         val token = tokenService.generate(
@@ -61,6 +67,6 @@ class AuthService(
             )
         )
 
-        return Outcome.Success(token)
+        return Ok(token)
     }
 }
