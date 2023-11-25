@@ -11,7 +11,7 @@ import org.koin.ktor.ext.inject
 fun Route.changeUsername() {
     val spotService: SpotService by inject()
 
-    post("v1/user/change-username") {
+    post("v1/profile/change-username") {
         //TODO: Implement
         val request = call.runCatching { this.receiveNullable<String>() }.getOrNull() ?: kotlin.run {
             call.respond(HttpStatusCode.BadRequest)

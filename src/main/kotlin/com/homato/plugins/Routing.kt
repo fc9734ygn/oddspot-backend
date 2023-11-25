@@ -1,10 +1,6 @@
 package com.homato.plugins
 
-import com.homato.routes.authenticate
-import com.homato.routes.getSecretInfo
-import com.homato.routes.login
-import com.homato.routes.register
-import com.homato.service.authentication.AuthService
+import com.homato.routes.*
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
@@ -13,6 +9,10 @@ fun Application.configureRouting() {
         login()
         register()
         authenticate()
-        getSecretInfo()
+        secretInfo()
+        unknownSpots()
+        visitedSpots()
+        submittedSpots()
+        changeUsername()
     }
 }

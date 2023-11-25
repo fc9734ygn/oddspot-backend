@@ -57,7 +57,9 @@ fun Route.login() {
             return@post
         }
 
-        when (val result = authService.login(request.email, request.password)) {
+        val result = authService.login(request.email, request.password)
+
+        when (result) {
             is Outcome.Success -> {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -90,7 +92,7 @@ fun Route.authenticate() {
     }
 }
 
-fun Route.getSecretInfo() {
+fun Route.secretInfo() {
     authenticate {
         get("secret") {
             val principal = call.principal<JWTPrincipal>()

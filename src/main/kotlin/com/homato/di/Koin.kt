@@ -50,7 +50,6 @@ fun Application.connectToPostgresql(embedded: Boolean): Database {
         val url = environment.config.property("database.url").getString()
         val user = environment.config.property("database.user").getString()
         val pass = System.getenv(POSTGRESQL_PW)
-        println("Password is: $pass") // This is just for debugging; remove this line after confirming the password.
 
         HikariDataSource(HikariConfig().apply {
             jdbcUrl = url
