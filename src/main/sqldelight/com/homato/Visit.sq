@@ -1,0 +1,9 @@
+CREATE TABLE visit (
+    id SERIAL PRIMARY KEY,
+    spot_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    visit_date INTEGER NOT NULL,
+    image_url TEXT NOT NULL,
+    FOREIGN KEY (spot_id) REFERENCES spot(id),
+    FOREIGN KEY (user_id) REFERENCES user(id)
+);
