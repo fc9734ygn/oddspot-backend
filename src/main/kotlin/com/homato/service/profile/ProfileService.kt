@@ -4,8 +4,10 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.mapError
 import com.homato.data.repository.UserRepository
+import com.homato.data.util.PostgreSqlErrorCode
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
+import org.postgresql.util.PSQLException
 import java.sql.SQLException
 
 @Singleton
@@ -20,21 +22,25 @@ class ProfileService(
             return Err(UsernameChangeError.InvalidUsername(usernameError))
         }
 
-        val dbQuery = userRepository.changeUsername(username = username, id = id)
+        val dbQuery = userRepository.changeUsername(
+            username = username,
+            id = id
+        )
 
         return dbQuery.mapError {
-            when (it) {
-                is SQLException -> {
-                    if (it.message?.contains("duplicate key value violates unique constraint") == true) {
-                        UsernameChangeError.UsernameAlreadyExists
-                    } else {
-                        UsernameChangeError.UserNotFound
-                    }
-                }
-
-                else -> UsernameChangeError.UserNotFound
+            if (it is PSQLException) {
+                handleSqlError(it)
+            } else {
+                UsernameChangeError.Generic
             }
         }
     }
 
+    private fun handleSqlError(psqlException: PSQLException): UsernameChangeError {
+        return when (PostgreSqlErrorCode.fromCode(psqlException.sqlState)) {
+            PostgreSqlErrorCode.UNIQUE_VIOLATION -> UsernameChangeError.UsernameAlreadyExists
+            PostgreSqlErrorCode.FOREIGN_KEY_VIOLATION -> UsernameChangeError.UserNotFound
+            else -> UsernameChangeError.Generic
+        }
+    }
 }

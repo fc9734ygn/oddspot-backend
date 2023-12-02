@@ -53,6 +53,10 @@ fun Route.changeUsername() {
                         UserNotFound -> call.respond(
                             HttpStatusCode.NotFound, "User not found"
                         )
+
+                        Generic -> call.respond(
+                            HttpStatusCode.InternalServerError, "Something went wrong"
+                        )
                     }
                 }
             )
