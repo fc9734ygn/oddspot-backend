@@ -23,11 +23,12 @@ class UserRepository(private val database: Database) : KoinComponent {
 
     suspend fun insertUser(
         email: String,
+        username: String,
         passwordHash: String,
         salt: String
     ): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
-            database.userQueries.insert(UUID.randomUUID().toString(), email, passwordHash, salt)
+            database.userQueries.insert(UUID.randomUUID().toString(), email, username, passwordHash, salt)
         }
     }
 }

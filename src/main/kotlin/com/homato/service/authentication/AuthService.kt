@@ -36,10 +36,13 @@ class AuthService(
         val saltedHash = hashingService.generateSaltedHash(password)
         val result = userRepository.insertUser(
             email = email,
+            username = email,
             passwordHash = saltedHash.hash,
             salt = saltedHash.salt
         )
-        return result.mapError { RegisterError.UserAlreadyExists }
+        return result.mapError {
+            RegisterError.UserAlreadyExists
+        }
     }
 
     suspend fun login(email: String, password: String): Result<String, LoginError> {
