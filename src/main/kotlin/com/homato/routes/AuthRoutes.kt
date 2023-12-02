@@ -12,7 +12,6 @@ import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -98,10 +97,11 @@ fun Route.authenticate() {
 }
 
 fun Route.secretInfo() {
+    val authService: AuthService by inject()
+
     authenticate {
         get("secret") {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.getClaim("userId", String::class)
+            val userId = authService.getUserId(call)
             call.respond(HttpStatusCode.OK, "Your userId is $userId")
         }
     }

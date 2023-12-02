@@ -1,4 +1,4 @@
-CREATE TABLE visit (
+CREATE TABLE IF NOT EXISTS visit (
     id SERIAL PRIMARY KEY,
     spot_id SERIAL NOT NULL,
     user_id TEXT NOT NULL,

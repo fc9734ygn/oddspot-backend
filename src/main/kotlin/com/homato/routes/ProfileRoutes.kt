@@ -1,24 +1,61 @@
 package com.homato.routes
 
+import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.runCatching
-import com.homato.service.spot.SpotService
+import com.homato.data.request.UsernameChangeRequest
+import com.homato.service.authentication.AuthService
+import com.homato.service.profile.ProfileService
+import com.homato.service.profile.UsernameChangeError.*
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 
 fun Route.changeUsername() {
-    val spotService: SpotService by inject()
+    val profileService: ProfileService by inject()
+    val authService: AuthService by inject()
 
-    post("v1/profile/change-username") {
-        //TODO: Implement
-        val request = call.runCatching { this.receiveNullable<String>() }.getOrElseNotNull {
-            call.respond(HttpStatusCode.BadRequest)
-            return@post
+    authenticate {
+        post("v1/profile/change-username") {
+
+            val userId = authService.getUserId(call)
+            if (userId == null) {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@post
+            }
+
+            val request = call.runCatching { receiveNullable<UsernameChangeRequest>() }.getOrElseNotNull {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val result = profileService.changeUsername(
+                username = request.username,
+                id = userId
+            )
+
+            result.fold(
+                success = { call.respond(HttpStatusCode.OK) },
+                failure = { error ->
+                    when (error) {
+                        is InvalidUsername -> call.respond(
+                            HttpStatusCode.BadRequest, "Invalid username : ${error.message}"
+                        )
+
+                        UsernameAlreadyExists -> call.respond(
+                            HttpStatusCode.Conflict, "Username already exists"
+                        )
+
+                        UserNotFound -> call.respond(
+                            HttpStatusCode.NotFound, "User not found"
+                        )
+                    }
+                }
+            )
         }
     }
-
 }

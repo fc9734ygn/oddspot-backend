@@ -11,6 +11,9 @@ import com.homato.service.authentication.token.TokenClaim
 import com.homato.service.authentication.token.TokenConfig
 import com.homato.service.authentication.token.TokenService
 import com.homato.util.getOrElseNotNull
+import io.ktor.server.application.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
 
@@ -21,6 +24,11 @@ class AuthService(
     private val tokenService: TokenService,
     private val tokenConfig: TokenConfig
 ) : KoinComponent {
+
+    fun getUserId(call: ApplicationCall): String? {
+        val principal = call.principal<JWTPrincipal>()
+        return principal?.getClaim("userId", String::class)
+    }
 
     suspend fun register(email: String, password: String): Result<Unit, RegisterError> {
         val emailError = SignUpValidator.validateEmail(email)

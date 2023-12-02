@@ -12,3 +12,6 @@ SELECT * FROM "user" WHERE email = ?;
 insert:
 INSERT INTO "user" (id, email,username, password_hash, salt)
 VALUES (?, ?, ?, ?, ?);
+
+changeUsername:
+UPDATE "user" SET username = ? WHERE id = ?;

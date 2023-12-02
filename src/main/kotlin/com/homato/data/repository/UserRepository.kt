@@ -31,4 +31,13 @@ class UserRepository(private val database: Database) : KoinComponent {
             database.userQueries.insert(UUID.randomUUID().toString(), email, username, passwordHash, salt)
         }
     }
+
+    suspend fun changeUsername(username: String, id: String): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
+        runCatching {
+            database.userQueries.changeUsername(
+                username = username,
+                id = id
+            )
+        }
+    }
 }
