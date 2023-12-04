@@ -3,7 +3,6 @@ package com.homato.routes
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.runCatching
 import com.homato.data.request.UsernameChangeRequest
-import com.homato.service.authentication.AuthService
 import com.homato.service.profile.ProfileService
 import com.homato.service.profile.UsernameChangeError.*
 import com.homato.util.getOrElseNotNull
@@ -17,12 +16,11 @@ import org.koin.ktor.ext.inject
 
 fun Route.changeUsername() {
     val profileService: ProfileService by inject()
-    val authService: AuthService by inject()
 
     authenticate {
         post("v1/profile/change-username") {
 
-            val userId = authService.getUserId(call)
+            val userId = getUserId(call)
             if (userId == null) {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@post

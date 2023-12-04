@@ -97,11 +97,9 @@ fun Route.authenticate() {
 }
 
 fun Route.secretInfo() {
-    val authService: AuthService by inject()
-
     authenticate {
         get("secret") {
-            val userId = authService.getUserId(call)
+            val userId = getUserId(call)
             call.respond(HttpStatusCode.OK, "Your userId is $userId")
         }
     }

@@ -16,7 +16,13 @@ class UserRepository(private val database: Database) : KoinComponent {
     suspend fun getByEmail(email: String): Result<User?, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
             database.userQueries.selectByEmail(email).executeAsOneOrNull()?.let {
-                User(UUID.fromString(it.id), it.email, it.password_hash, it.username, it.salt)
+                User(
+                    id = UUID.fromString(it.id),
+                    email = it.email,
+                    username = it.username,
+                    passwordHash = it.password_hash,
+                    salt = it.salt
+                )
             }
         }
     }

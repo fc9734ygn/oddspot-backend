@@ -1,6 +1,6 @@
 package com.homato.data.util
 
-enum class PostgreSqlErrorCode(val code: String) {
+enum class PostgreSQLErrorCode(val code: String) {
     UNIQUE_VIOLATION("23505"),
     FOREIGN_KEY_VIOLATION("23503"),
     SYNTAX_ERROR("42601"),
@@ -14,7 +14,7 @@ enum class PostgreSqlErrorCode(val code: String) {
     DUPLICATE_SCHEMA("42P06");
 
     companion object {
-        fun fromCode(code: String): PostgreSqlErrorCode? {
+        fun fromCode(code: String): PostgreSQLErrorCode? {
             return values().firstOrNull { it.code == code }
         }
     }

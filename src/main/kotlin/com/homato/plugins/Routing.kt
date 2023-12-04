@@ -10,6 +10,7 @@ fun Application.configureRouting() {
         register()
         authenticate()
         secretInfo()
+        submitSpotRoute()
         unknownSpots()
         visitedSpots()
         submittedSpots()
