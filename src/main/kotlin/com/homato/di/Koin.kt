@@ -3,9 +3,14 @@ package com.homato.di
 
 import app.cash.sqldelight.driver.jdbc.asJdbcDriver
 import com.homato.Database
+import com.homato.JWT_SECRET_ENV
+import com.homato.POSTGRESQL_PW
+import com.homato.data.repository.FileRepository
 import com.homato.service.authentication.token.TokenConfig
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
@@ -18,9 +23,7 @@ import org.koin.logger.slf4jLogger
 @ComponentScan("com.homato")
 class AppModule
 
-private const val POSTGRESQL_PW = "POSTGRESQL_PW"
 private const val TOKEN_EXPIRATION_DURATION = 365L * 1000L * 60L * 60L * 24L // 1 year
-private const val JWT_SECRET_ENV = "JWT_SECRET"
 
 fun Application.configureKoin() {
     install(Koin) {
@@ -38,6 +41,7 @@ fun Application.configureKoin() {
 fun configModule(database: Database, tokenConfig: TokenConfig) = module {
     single { database }
     single { tokenConfig }
+    single { HttpClient(CIO) }
 }
 
 fun Application.connectToPostgresql(embedded: Boolean): Database {

@@ -3,8 +3,8 @@ package com.homato.routes
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.runCatching
-import com.homato.data.request.AuthRequest
-import com.homato.data.responses.AuthResponse
+import com.homato.data.model.request.AuthRequest
+import com.homato.data.model.response.AuthResponse
 import com.homato.service.authentication.AuthService
 import com.homato.service.authentication.LoginError
 import com.homato.service.authentication.RegisterError

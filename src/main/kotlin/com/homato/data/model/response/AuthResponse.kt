@@ -1,4 +1,4 @@
-package com.homato.data.responses
+package com.homato.data.model.response
 
 import kotlinx.serialization.Serializable
 

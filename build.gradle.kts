@@ -52,6 +52,9 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:2.3.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
+    // Ktor client
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+
     // Db
     implementation("org.postgresql:postgresql:$postgresql_version")
     implementation("com.h2database:h2:$h2_version")

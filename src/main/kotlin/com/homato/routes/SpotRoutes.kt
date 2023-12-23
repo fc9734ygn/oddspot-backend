@@ -25,10 +25,11 @@ fun Route.submitSpotRoute() {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@post
             }
+            spotService.submitSpot()
 
-            val file = File("uploads/ktor_logo.png")
-            call.receiveChannel().copyAndClose(file.writeChannel())
-            call.respondText("A file is uploaded")
+//            val file = File("uploads/ktor_logo.png")
+//            call.receiveChannel().copyAndClose(file.writeChannel())
+//            call.respondText("A file is uploaded")
 
 
 

@@ -2,7 +2,7 @@ package com.homato.routes
 
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.runCatching
-import com.homato.data.request.UsernameChangeRequest
+import com.homato.data.model.request.UsernameChangeRequest
 import com.homato.service.profile.ProfileService
 import com.homato.service.profile.UsernameChangeError.*
 import com.homato.util.getOrElseNotNull
