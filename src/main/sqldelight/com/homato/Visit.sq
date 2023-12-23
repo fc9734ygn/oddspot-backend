@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS visit (
     id SERIAL PRIMARY KEY,
     spot_id SERIAL NOT NULL,
     user_id TEXT NOT NULL,
-    visit_date INTEGER NOT NULL,
+    visit_time BIGINT NOT NULL,
     image_url TEXT NOT NULL,
     FOREIGN KEY (spot_id) REFERENCES spot(id),
     FOREIGN KEY (user_id) REFERENCES "user"(id)

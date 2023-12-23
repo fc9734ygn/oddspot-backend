@@ -54,6 +54,9 @@ dependencies {
 
     // Ktor client
     implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-client-json:$ktor_version")
+    implementation("io.ktor:ktor-client-serialization:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
 
     // Db
     implementation("org.postgresql:postgresql:$postgresql_version")

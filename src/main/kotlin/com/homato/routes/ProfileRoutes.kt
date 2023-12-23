@@ -1,6 +1,7 @@
 package com.homato.routes
 
 import com.github.michaelbull.result.fold
+import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
 import com.homato.data.model.request.UsernameChangeRequest
 import com.homato.service.profile.ProfileService
@@ -20,8 +21,7 @@ fun Route.changeUsername() {
     authenticate {
         post("v1/profile/change-username") {
 
-            val userId = getUserId(call)
-            if (userId == null) {
+            val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@post
             }

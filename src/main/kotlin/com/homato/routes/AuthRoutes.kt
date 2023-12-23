@@ -2,6 +2,7 @@ package com.homato.routes
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
 import com.homato.data.model.request.AuthRequest
 import com.homato.data.model.response.AuthResponse
@@ -99,7 +100,10 @@ fun Route.authenticate() {
 fun Route.secretInfo() {
     authenticate {
         get("secret") {
-            val userId = getUserId(call)
+            val userId = getUserId(call).getOrElse {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@get
+            }
             call.respond(HttpStatusCode.OK, "Your userId is $userId")
         }
     }

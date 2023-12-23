@@ -5,13 +5,15 @@ import app.cash.sqldelight.driver.jdbc.asJdbcDriver
 import com.homato.Database
 import com.homato.JWT_SECRET_ENV
 import com.homato.POSTGRESQL_PW
-import com.homato.data.repository.FileRepository
 import com.homato.service.authentication.token.TokenConfig
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import kotlinx.serialization.json.Json
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.dsl.module
@@ -41,7 +43,17 @@ fun Application.configureKoin() {
 fun configModule(database: Database, tokenConfig: TokenConfig) = module {
     single { database }
     single { tokenConfig }
-    single { HttpClient(CIO) }
+    single {
+        HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        ignoreUnknownKeys = true
+                    }
+                )
+            }
+        }
+    }
 }
 
 fun Application.connectToPostgresql(embedded: Boolean): Database {
