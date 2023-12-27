@@ -67,10 +67,6 @@ fun Route.visitedSpots() {
 
     get("v1/spot/visited-spots") {
         //TODO: Implement
-        val request = call.runCatching { this.receiveNullable<String>() }.getOrElseNotNull {
-            call.respond(HttpStatusCode.BadRequest)
-            return@get
-        }
 
         call.respondText("Hello World!")
     }
@@ -80,10 +76,6 @@ fun Route.submittedSpots() {
     //TODO: Implement
 
     get("v1/spot/submitted-spots") {
-        val request = call.runCatching { this.receiveNullable<String>() }.getOrElseNotNull {
-            call.respond(HttpStatusCode.BadRequest)
-            return@get
-        }
 
         call.respondText("Hello World!")
     }

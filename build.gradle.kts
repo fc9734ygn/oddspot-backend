@@ -15,6 +15,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.21"
     id ("com.google.devtools.ksp") version "1.8.21-1.0.11"
     id("app.cash.sqldelight") version "2.0.0"
+    id("io.gitlab.arturbosch.detekt") version("1.23.4")
 }
 
 group = "com.homato"
@@ -92,4 +93,8 @@ tasks.register<Jar>("fatJar") {
     from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
     with(tasks.jar.get() as CopySpec)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+detekt {
+    config.setFrom("$rootDir/default-detekt-config.yml")
 }

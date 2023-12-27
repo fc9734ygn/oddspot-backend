@@ -1,5 +1,6 @@
 package com.homato.service.authentication
 
+@Suppress("UnusedPrivateMember")
 object SignUpValidator {
 
     private const val EMAIL_REGEX = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"

@@ -3,6 +3,8 @@ package com.homato.data.util
 import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_NAME
 import java.util.*
 
+private const val BACKBLAZE_FILENAME_BYTE_LIMIT = 1024
+
 fun generateUniqueFileName(): String {
     // https://www.backblaze.com/docs/cloud-storage-files
     var formattedName = UUID.randomUUID().toString()
@@ -14,10 +16,9 @@ fun generateUniqueFileName(): String {
     }
 
     // Ensure the name is within the 1024-byte limit by truncating if necessary
-    val byteLimit = 1024
     val nameBytes = formattedName.toByteArray()
-    if (nameBytes.size > byteLimit) {
-        formattedName = String(nameBytes, 0, byteLimit, Charsets.UTF_8)
+    if (nameBytes.size > BACKBLAZE_FILENAME_BYTE_LIMIT) {
+        formattedName = String(nameBytes, 0, BACKBLAZE_FILENAME_BYTE_LIMIT, Charsets.UTF_8)
     }
 
     return formattedName
