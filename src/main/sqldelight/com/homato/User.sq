@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS "user" (
+    id TEXT PRIMARY KEY NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    salt TEXT NOT NULL
+);
+
+selectByEmail:
+SELECT * FROM "user" WHERE email = ?;
+
+insert:
+INSERT INTO "user" (id, email,username, password_hash, salt)
+VALUES (?, ?, ?, ?, ?);
+
+changeUsername:
+UPDATE "user" SET username = ? WHERE id = ?;
