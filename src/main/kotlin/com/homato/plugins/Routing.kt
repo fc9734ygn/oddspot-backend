@@ -15,5 +15,6 @@ fun Application.configureRouting() {
         visitedSpots()
         submittedSpots()
         changeUsername()
+        visitSpot()
     }
 }
