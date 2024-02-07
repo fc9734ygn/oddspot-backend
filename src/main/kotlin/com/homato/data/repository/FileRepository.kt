@@ -59,11 +59,10 @@ class FileRepository(
     ): Result<BackBlazeAuthResponse, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
             val authValue = "$applicationKeyId:$applicationKey".encodeBase64()
-            val url = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account"
             client.get {
-                url(url)
+                url(BACKBLAZE_AUTH_URL)
                 headers {
-                    append(HttpHeaders.Authorization, "Basic $authValue")
+                    append(HttpHeaders.Authorization, "$BASIC_AUTH_PREFIX $authValue")
                 }
             }.body<BackBlazeAuthResponse>()
         }
@@ -76,7 +75,7 @@ class FileRepository(
     ): Result<B2UploadUrlResponse, Throwable> =
         withContext(Dispatchers.IO) {
             runCatching {
-                val url = "$baseApiUrl/b2api/v2/b2_get_upload_url"
+                val url = "$baseApiUrl/$UPLOAD_URL_PATH"
                 client.get {
                     url(url)
                     headers {
@@ -103,13 +102,21 @@ class FileRepository(
                     url(uploadUrl)
                     headers {
                         append(HttpHeaders.Authorization, authorizationToken)
-                        append("X-Bz-File-Name", generateUniqueFileName())
+                        append(X_BZ_FILE_NAME, generateUniqueFileName())
                         append(HttpHeaders.ContentType, contentType.toString())
                         append(HttpHeaders.ContentLength, contentLength.toString())
-                        append("X-Bz-Content-Sha1", sha1Checksum)
+                        append(X_BZ_CONTENT_SHA1, sha1Checksum)
                     }
                     setBody(fileBytes)
                 }.body<B2UploadFileResponse>()
             }
         }
+
+    companion object {
+        private const val BACKBLAZE_AUTH_URL = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account"
+        private const val UPLOAD_URL_PATH = "b2api/v2/b2_get_upload_url"
+        private const val BASIC_AUTH_PREFIX = "Basic"
+        private const val X_BZ_FILE_NAME = "X-Bz-File-Name"
+        private const val X_BZ_CONTENT_SHA1 = "X-Bz-Content-Sha1"
+    }
 }

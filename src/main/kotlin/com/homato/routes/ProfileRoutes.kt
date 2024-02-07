@@ -19,7 +19,7 @@ fun Route.changeUsername() {
     val profileService: ProfileService by inject()
 
     authenticate {
-        post("v1/profile/change-username") {
+        post("$VERSION_1/$COLLECTION_PROFILE/change-username") {
 
             val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")

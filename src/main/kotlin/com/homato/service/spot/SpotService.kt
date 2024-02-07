@@ -43,10 +43,11 @@ class SpotService(
         spotId: Int,
         filePath: String,
         fileContentType: ContentType
-    ) : Result<Unit, Throwable> {
-        val url = fileRepository.uploadImageToBucket(filePath, fileContentType).getOrElse {
-            return Err(it)
-        }
+    ): Result<Unit, Throwable> {
+        val url = fileRepository.uploadImageToBucket(filePath, fileContentType)
+            .getOrElse {
+                return Err(it)
+            }
         return spotRepository.visitSpot(userId, spotId, url)
     }
 }

@@ -21,7 +21,7 @@ import org.koin.ktor.ext.inject
 fun Route.register() {
     val authService: AuthService by inject()
 
-    post("v1/register") {
+    post("$VERSION_1/$COLLECTION_AUTH/register") {
 
         val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
@@ -55,7 +55,7 @@ fun Route.register() {
 fun Route.login() {
     val authService: AuthService by inject()
 
-    post("v1/login") {
+    post("$VERSION_1/$COLLECTION_AUTH/login") {
 
         val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
@@ -91,7 +91,7 @@ fun Route.login() {
 
 fun Route.authenticate() {
     authenticate {
-        get("authenticate") {
+        get("$VERSION_1/$COLLECTION_AUTH/authenticate") {
             call.respond(HttpStatusCode.OK)
         }
     }
@@ -99,7 +99,7 @@ fun Route.authenticate() {
 
 fun Route.secretInfo() {
     authenticate {
-        get("secret") {
+        get("$VERSION_1/$COLLECTION_AUTH/secret-info") {
             val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@get

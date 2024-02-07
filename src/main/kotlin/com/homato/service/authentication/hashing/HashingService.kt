@@ -9,8 +9,8 @@ import java.security.SecureRandom
 @Singleton
 class HashingService : KoinComponent {
 
-    fun generateSaltedHash(value: String, saltLength: Int = 32): SaltedHash {
-        val salt = SecureRandom.getInstance("SHA1PRNG").generateSeed(saltLength)
+    fun generateSaltedHash(value: String, saltLength: Int = DEFAULT_SALT_LENGTH): SaltedHash {
+        val salt = SecureRandom.getInstance(ALGORITHM_SHA1PRNG).generateSeed(saltLength)
         val saltAsHex = Hex.encodeHexString(salt)
         val hash = DigestUtils.sha256Hex("$saltAsHex$value")
         return SaltedHash(
@@ -21,5 +21,10 @@ class HashingService : KoinComponent {
 
     fun verify(value: String, saltedHash: SaltedHash): Boolean {
         return DigestUtils.sha256Hex(saltedHash.salt + value) == saltedHash.hash
+    }
+
+    companion object {
+        private const val ALGORITHM_SHA1PRNG = "SHA1PRNG"
+        private const val DEFAULT_SALT_LENGTH = 32
     }
 }

@@ -16,15 +16,15 @@ fun Route.submitSpotRoute() {
     val spotService: SpotService by inject()
 
     authenticate {
-        post("v1/spot/submit-spot") {
+        post("$VERSION_1/$COLLECTION_SPOT/submit-spot") {
             val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@post
             }
 
             val multipartData = call.extractMultipartData<SubmitSpotRequest>(
-                formDataPartName = "data",
-                filePartName = "image"
+                formDataPartName = MULTIPART_DATA_KEY,
+                filePartName = MULTIPART_IMAGE_KEY
             ).getOrElse {
                 call.respond(HttpStatusCode.BadRequest, it)
                 return@post
@@ -55,7 +55,7 @@ fun Route.submitSpotRoute() {
 fun Route.spots() {
     val spotService: SpotService by inject()
     authenticate {
-        get("v1/spot/spots") {
+        get("$VERSION_1/$COLLECTION_SPOT/spots") {
             val result = spotService.getAllSpots()
 
             result.fold(
@@ -74,15 +74,15 @@ fun Route.visitSpot() {
     val spotService: SpotService by inject()
 
     authenticate {
-        post("v1/spot/visit-spot") {
+        post("$VERSION_1/$COLLECTION_SPOT/visit-spot") {
             val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@post
             }
 
             val multipartData = call.extractMultipartData<VisitSpotRequest>(
-                formDataPartName = "data",
-                filePartName = "image"
+                formDataPartName = MULTIPART_DATA_KEY,
+                filePartName = MULTIPART_IMAGE_KEY
             ).getOrElse {
                 call.respond(HttpStatusCode.BadRequest, it)
                 return@post
@@ -111,7 +111,7 @@ fun Route.visitSpot() {
 }
 
 fun Route.visitedSpots() {
-    get("v1/spot/visited-spots") {
+    get("$VERSION_1/$COLLECTION_SPOT/visited-spots") {
         //TODO: Implement
 
         call.respondText("Hello World!")
@@ -121,7 +121,7 @@ fun Route.visitedSpots() {
 fun Route.submittedSpots() {
     //TODO: Implement
 
-    get("v1/spot/submitted-spots") {
+    get("$VERSION_1/$COLLECTION_SPOT/submitted-spots") {
 
         call.respondText("Hello World!")
     }

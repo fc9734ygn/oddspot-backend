@@ -19,6 +19,10 @@ import org.koin.ksp.generated.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 
+private const val JDBC_URL_H2 = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
+private const val DRIVER_CLASS_NAME_H2 = "org.h2.Driver"
+private const val DRIVER_CLASS_NAME_POSTGRESQL = "org.postgresql.Driver"
+
 @Module
 @ComponentScan("com.homato")
 class AppModule
@@ -57,8 +61,8 @@ fun configModule(database: Database, tokenConfig: TokenConfig) = module {
 fun Application.connectToPostgresql(embedded: Boolean): Database {
     val dataSource: HikariDataSource = if (embedded) {
         HikariDataSource(HikariConfig().apply {
-            jdbcUrl = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
-            driverClassName = "org.h2.Driver"
+            jdbcUrl = JDBC_URL_H2
+            driverClassName = DRIVER_CLASS_NAME_H2
         })
     } else {
         val url = System.getenv(POSTGRESQL_CONNECTION_STRING)
@@ -69,7 +73,7 @@ fun Application.connectToPostgresql(embedded: Boolean): Database {
             jdbcUrl = url
             username = user
             password = pass
-            driverClassName = "org.postgresql.Driver"
+            driverClassName = DRIVER_CLASS_NAME_POSTGRESQL
         })
     }
     val driver = dataSource.asJdbcDriver()

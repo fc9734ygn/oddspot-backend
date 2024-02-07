@@ -21,12 +21,10 @@ class ProfileService(
             return Err(UsernameChangeError.InvalidUsername(usernameError))
         }
 
-        val dbQuery = userRepository.changeUsername(
+        return userRepository.changeUsername(
             username = username,
             id = id
-        )
-
-        return dbQuery.mapError { mapChangeUsernameError(it) }
+        ).mapError { mapChangeUsernameError(it) }
     }
 
     private fun mapChangeUsernameError(throwable: Throwable): UsernameChangeError {

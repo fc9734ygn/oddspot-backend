@@ -16,14 +16,14 @@ import java.io.File
 fun getUserId(call: ApplicationCall): Result<String, Throwable> {
     return runCatching {
         val principal = call.principal<JWTPrincipal>()
-        principal!!.getClaim("userId", String::class)!!
+        principal!!.getClaim(USER_ID_CLAIM, String::class)!!
     }
 }
 
 suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
     formDataPartName: String,
     filePartName: String,
-    tempDirectory: String = "temp"
+    tempDirectory: String = TEMP_DIRECTORY
 ): Result<MultipartData<T>, String> {
     var formData: T? = null
     var tempFile: File? = null
@@ -43,9 +43,9 @@ suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
             is PartData.FileItem -> {
                 if (part.name == filePartName) {
                     contentType = part.contentType
-                    val fileName = part.originalFileName ?: "file"
+                    val fileName = part.originalFileName ?: DEFAULT_FILE_NAME
                     val fileBytes = part.streamProvider().readBytes()
-                    tempFile = File.createTempFile("upload-", fileName, directory).apply {
+                    tempFile = File.createTempFile(DEFAULT_FILE_PREFIX, fileName, directory).apply {
                         writeBytes(fileBytes)
                     }
                 }
