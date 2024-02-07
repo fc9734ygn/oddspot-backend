@@ -56,7 +56,12 @@ fun Route.spots() {
     val spotService: SpotService by inject()
     authenticate {
         get("$VERSION_1/$COLLECTION_SPOT/spots") {
-            val result = spotService.getAllSpots()
+            val userId = getUserId(call).getOrElse {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@get
+            }
+
+            val result = spotService.getSpots(userId)
 
             result.fold(
                 success = {

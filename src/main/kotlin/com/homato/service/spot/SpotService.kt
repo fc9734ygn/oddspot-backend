@@ -1,9 +1,12 @@
 package com.homato.service.spot
 
 import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
 import com.homato.data.model.request.SubmitSpotRequest
+import com.homato.data.model.response.AllSpotsResponse
+import com.homato.data.model.response.SpotWithUserVisits
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotRepository
 import io.ktor.http.*
@@ -36,7 +39,20 @@ class SpotService(
         )
     }
 
-    suspend fun getAllSpots() = spotRepository.getAllActiveSpots()
+    suspend fun getSpots(userId: String): Result<AllSpotsResponse, Throwable> {
+        val spots = spotRepository.getAllActiveSpots().getOrElse {
+            return Err(it)
+        }
+        val allUserVisits = spotRepository.getAllUserVisits(userId).getOrElse {
+            return Err(it)
+        }
+        // If performance becomes an issue optimise this or do this in SQL query
+        val spotsWithUserVisits = spots.map { spot ->
+            val userVisitsOfTheSpot = allUserVisits.filter { it.spot_id == spot.id }.map { it.visit_time }
+            SpotWithUserVisits(spot, userVisitsOfTheSpot)
+        }
+        return Ok(AllSpotsResponse(spotsWithUserVisits))
+    }
 
     suspend fun visitSpot(
         userId: String,

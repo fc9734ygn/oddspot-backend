@@ -55,6 +55,14 @@ class SpotRepository(
         }
     }
 
+    suspend fun getAllUserVisits(userId: String) = withContext(Dispatchers.IO) {
+        runCatching {
+            database.visitQueries
+                .selectAllWhereUserId(userId)
+                .executeAsList()
+        }
+    }
+
     suspend fun visitSpot(
         userId: String,
         spotId: Int,
@@ -69,4 +77,5 @@ class SpotRepository(
             )
         }
     }
+
 }
