@@ -1,10 +1,9 @@
 package com.homato.data.repository
 
+import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.runCatching
 import com.homato.Database
-import com.homato.data.model.Spot
-import com.homato.data.model.SpotCategory
-import com.homato.data.model.SpotVerificationState
+import com.homato.data.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Singleton
@@ -63,6 +62,28 @@ class SpotRepository(
         }
     }
 
+    suspend fun getAllActiveAndVerifiedSpotsWithVisitsForUser(userId: String): Result<List<SpotWithVisits>, Throwable> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+
+                val flatQueryResults = database.spotQueries
+                    .selectAllActiveSpotsWithVisitsByUserIdAndVerificationState(
+                        is_active = true,
+                        verification_state = SpotVerificationState.VERIFIED.value,
+                        user_id = userId
+                    )
+                    .executeAsList()
+
+                flatQueryResults.groupBy { it.id } // Group by spot's ID
+                    .map { (_, spotVisitsRows) ->
+                        val firstRow = spotVisitsRows.first()
+                        val spot = Spot.fromQueryResult(firstRow)
+                        val visits = spotVisitsRows.mapNotNull { Visit.fromQueryResult(it) }
+                        SpotWithVisits(spot, visits)
+                    }
+            }
+        }
+
     suspend fun visitSpot(
         userId: String,
         spotId: Int,
@@ -75,6 +96,12 @@ class SpotRepository(
                 image_url = imageUrl,
                 visit_time = System.currentTimeMillis()
             )
+        }
+    }
+
+    suspend fun getSpot(spotId: Int) = withContext(Dispatchers.IO) {
+        runCatching {
+            database.spotQueries.selectById(spotId).executeAsOneOrNull()
         }
     }
 

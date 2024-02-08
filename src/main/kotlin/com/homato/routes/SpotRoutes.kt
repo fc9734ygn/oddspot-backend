@@ -61,7 +61,7 @@ fun Route.spots() {
                 return@get
             }
 
-            val result = spotService.getSpots(userId)
+            val result = spotService.getSpotsFeed(userId)
 
             result.fold(
                 success = {

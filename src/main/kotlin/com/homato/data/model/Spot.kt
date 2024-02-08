@@ -1,5 +1,6 @@
 package com.homato.data.model
 
+import com.homato.SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -16,8 +17,6 @@ data class Spot(
     val category: String,
     val difficulty: Int,
     val isActive: Boolean,
-    val numVisits: Int,
-    val lastVisited: Long?
 ){
     companion object {
         fun fromTable(spot: com.homato.Spot): Spot {
@@ -34,9 +33,21 @@ data class Spot(
                 category = spot.category,
                 difficulty = spot.difficulty,
                 isActive = spot.is_active,
-                numVisits = spot.num_visits,
-                lastVisited = spot.last_visited
             )
         }
+        fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState): Spot = Spot(
+            id = row.id,
+            title = row.title,
+            description = row.description,
+            latitude = row.latitude,
+            longitude = row.longitude,
+            creatorId = row.creator_id,
+            pictureUrl = row.picture_url,
+            createTime = row.create_time,
+            verificationState = row.verification_state,
+            category = row.category,
+            difficulty = row.difficulty,
+            isActive = row.is_active,
+        )
     }
 }

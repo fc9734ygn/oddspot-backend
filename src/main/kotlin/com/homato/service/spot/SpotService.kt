@@ -5,10 +5,11 @@ import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.getOrElse
 import com.homato.data.model.request.SubmitSpotRequest
-import com.homato.data.model.response.AllSpotsResponse
-import com.homato.data.model.response.SpotWithUserVisits
+import com.homato.data.model.response.SpotWithUserVisitsResponse
+import com.homato.data.model.response.SpotsFeedResponse
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotRepository
+import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
@@ -39,19 +40,15 @@ class SpotService(
         )
     }
 
-    suspend fun getSpots(userId: String): Result<AllSpotsResponse, Throwable> {
-        val spots = spotRepository.getAllActiveSpots().getOrElse {
+    suspend fun getSpotsFeed(userId: String): Result<SpotsFeedResponse, Throwable> {
+        val spotsWithVisits = spotRepository.getAllActiveAndVerifiedSpotsWithVisitsForUser(userId).getOrElse {
             return Err(it)
         }
-        val allUserVisits = spotRepository.getAllUserVisits(userId).getOrElse {
-            return Err(it)
+        val spotsWithVisitTimestamps = spotsWithVisits.map { spotWithVisit ->
+            SpotWithUserVisitsResponse(spotWithVisit.spot, spotWithVisit.visits.map { it.visitTime })
         }
-        // If performance becomes an issue optimise this or do this in SQL query
-        val spotsWithUserVisits = spots.map { spot ->
-            val userVisitsOfTheSpot = allUserVisits.filter { it.spot_id == spot.id }.map { it.visit_time }
-            SpotWithUserVisits(spot, userVisitsOfTheSpot)
-        }
-        return Ok(AllSpotsResponse(spotsWithUserVisits))
+        val response = SpotsFeedResponse(spotsWithVisitTimestamps)
+        return Ok(response)
     }
 
     suspend fun visitSpot(
@@ -64,6 +61,12 @@ class SpotService(
             .getOrElse {
                 return Err(it)
             }
+        val spot = spotRepository.getSpot(spotId).getOrElseNotNull {
+            return Err(it ?: Throwable("Spot not found"))
+        }
+        if (!spot.is_active) {
+            return Err(Throwable("Spot is not active"))
+        }
         return spotRepository.visitSpot(userId, spotId, url)
     }
 }
