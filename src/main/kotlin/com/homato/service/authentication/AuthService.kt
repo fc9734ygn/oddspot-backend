@@ -22,7 +22,11 @@ class AuthService(
     private val tokenConfig: TokenConfig
 ) : KoinComponent {
 
-    suspend fun register(email: String, password: String): Result<Unit, RegisterError> {
+    suspend fun register(
+        username: String,
+        email: String,
+        password: String
+    ): Result<Unit, RegisterError> {
         val emailError = SignUpValidator.validateEmail(email)
         if (emailError != null) {
             return Err(RegisterError.InvalidEmail)
@@ -36,7 +40,7 @@ class AuthService(
         val saltedHash = hashingService.generateSaltedHash(password)
         val result = userRepository.insertUser(
             email = email,
-            username = email,
+            username = username,
             passwordHash = saltedHash.hash,
             salt = saltedHash.salt
         )

@@ -34,7 +34,13 @@ class UserRepository(private val database: Database) : KoinComponent {
         salt: String
     ): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
-            database.userQueries.insert(UUID.randomUUID().toString(), email, username, passwordHash, salt)
+            database.userQueries.insert(
+                id = UUID.randomUUID().toString(),
+                email = email,
+                username = username,
+                password_hash = passwordHash,
+                salt = salt
+            )
         }
     }
 

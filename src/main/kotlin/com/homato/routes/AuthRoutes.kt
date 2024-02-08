@@ -4,7 +4,8 @@ import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
-import com.homato.data.model.request.AuthRequest
+import com.homato.data.model.request.LoginRequest
+import com.homato.data.model.request.RegisterRequest
 import com.homato.data.model.response.AuthResponse
 import com.homato.service.authentication.AuthService
 import com.homato.service.authentication.LoginError
@@ -23,12 +24,16 @@ fun Route.register() {
 
     post("$VERSION_1/$COLLECTION_AUTH/register") {
 
-        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
+        val request = call.runCatching { this.receiveNullable<RegisterRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }
 
-        val result = authService.register(request.email, request.password)
+        val result = authService.register(
+            username = request.username,
+            email = request.email,
+            password = request.password
+        )
 
         when (result) {
             is Ok -> call.respond(HttpStatusCode.Created)
@@ -57,7 +62,7 @@ fun Route.login() {
 
     post("$VERSION_1/$COLLECTION_AUTH/login") {
 
-        val request = call.runCatching { this.receiveNullable<AuthRequest>() }.getOrElseNotNull {
+        val request = call.runCatching { this.receiveNullable<LoginRequest>() }.getOrElseNotNull {
             call.respond(HttpStatusCode.BadRequest)
             return@post
         }

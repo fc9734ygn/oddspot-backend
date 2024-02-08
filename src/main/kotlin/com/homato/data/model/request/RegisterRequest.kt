@@ -3,7 +3,8 @@ package com.homato.data.model.request
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AuthRequest(
+data class RegisterRequest(
+    val username: String,
     val email: String,
     val password: String
 )
