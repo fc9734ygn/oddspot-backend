@@ -11,12 +11,13 @@ import org.postgresql.util.PSQLException
 
 @Singleton
 class ProfileService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val usernameValidator: UsernameValidator
 ) : KoinComponent {
 
     suspend fun changeUsername(username: String, id: String): Result<Unit, UsernameChangeError> {
 
-        val usernameError = UsernameValidator.validate(username)
+        val usernameError = usernameValidator.validate(username)
         if (usernameError != null) {
             return Err(UsernameChangeError.InvalidUsername(usernameError))
         }

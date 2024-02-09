@@ -1,9 +1,12 @@
 package com.homato.service.profile
 
-object UsernameValidator {
+import org.koin.core.component.KoinComponent
 
-    private const val MIN_LENGTH = 4
-    private const val MAX_LENGTH = 15
+private const val MIN_LENGTH = 4
+private const val MAX_LENGTH = 15
+
+class UsernameValidator : KoinComponent {
+
     private val allowedCharacters = Regex("^[a-zA-Z0-9_]*$") // Only letters, digits, and underscores
 
     fun validate(username: String): String? = when {
