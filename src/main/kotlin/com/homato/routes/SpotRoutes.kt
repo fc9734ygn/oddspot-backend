@@ -115,19 +115,25 @@ fun Route.visitSpot() {
     }
 }
 
-fun Route.visitedSpots() {
-    get("$VERSION_1/$COLLECTION_SPOT/visited-spots") {
-        //TODO: Implement
-
-        call.respondText("Hello World!")
-    }
-}
-
 fun Route.submittedSpots() {
-    //TODO: Implement
+    val spotService: SpotService by inject()
 
-    get("$VERSION_1/$COLLECTION_SPOT/submitted-spots") {
+    authenticate {
+        get("$VERSION_1/$COLLECTION_SPOT/submitted-spots") {
+            val userId = getUserId(call).getOrElse {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@get
+            }
 
-        call.respondText("Hello World!")
+            val result = spotService.getSubmittedSpots(userId)
+            result.fold(
+                success = {
+                    call.respond(HttpStatusCode.OK, it)
+                },
+                failure = {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to fetch submitted spots")
+                }
+            )
+        }
     }
 }

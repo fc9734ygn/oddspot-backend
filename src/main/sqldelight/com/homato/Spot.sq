@@ -32,3 +32,7 @@ FROM spot
 LEFT JOIN visit ON spot.id = visit.spot_id AND visit.user_id = ?
 WHERE spot.is_active = ?
 AND spot.verification_state = ?;
+
+
+selectAllWhereCreatorId:
+SELECT * FROM spot WHERE creator_id = ?;

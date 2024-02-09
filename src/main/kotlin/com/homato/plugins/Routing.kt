@@ -6,15 +6,20 @@ import io.ktor.server.routing.*
 
 fun Application.configureRouting() {
     routing {
+
+        // Auth
         login()
         register()
         authenticate()
         secretInfo()
+
+        // Spots
         submitSpotRoute()
         spots()
-        visitedSpots()
         submittedSpots()
-        changeUsername()
         visitSpot()
+
+        // Profile
+        changeUsername()
     }
 }

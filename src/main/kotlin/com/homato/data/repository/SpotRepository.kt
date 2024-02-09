@@ -105,4 +105,13 @@ class SpotRepository(
         }
     }
 
+    suspend fun getSubmittedSpots(userId: String) = withContext(Dispatchers.IO) {
+        runCatching {
+            database.spotQueries
+                .selectAllWhereCreatorId(userId)
+                .executeAsList()
+                .map { Spot.fromTable(it) }
+        }
+    }
+
 }

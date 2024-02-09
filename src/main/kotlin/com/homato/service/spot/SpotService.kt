@@ -1,12 +1,10 @@
 package com.homato.service.spot
 
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.getOrElse
+import com.github.michaelbull.result.*
 import com.homato.data.model.request.SubmitSpotRequest
 import com.homato.data.model.response.SpotWithUserVisitsResponse
 import com.homato.data.model.response.SpotsFeedResponse
+import com.homato.data.model.response.SubmittedSpotsResponse
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotRepository
 import com.homato.util.getOrElseNotNull
@@ -68,5 +66,9 @@ class SpotService(
             return Err(Throwable("Spot is not active"))
         }
         return spotRepository.visitSpot(userId, spotId, url)
+    }
+
+    suspend fun getSubmittedSpots(userId: String): Result<SubmittedSpotsResponse, Throwable> {
+        return spotRepository.getSubmittedSpots(userId).map { SubmittedSpotsResponse(it) }
     }
 }
