@@ -83,8 +83,11 @@ dependencies {
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
 
-    //Result/Either monad
+    // Result/Either monad
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.18")
+
+    // Datetime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.5.0")
 
 }
 

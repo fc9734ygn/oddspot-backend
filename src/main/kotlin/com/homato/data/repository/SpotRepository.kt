@@ -6,6 +6,7 @@ import com.homato.Database
 import com.homato.data.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Clock
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
 
@@ -31,7 +32,7 @@ class SpotRepository(
                 longitude = longitude,
                 picture_url = mainImageUrl,
                 creator_id = creatorId,
-                create_time = System.currentTimeMillis(),
+                create_time = Clock.System.now().toEpochMilliseconds(),
                 verification_state = SpotVerificationState.SUBMITTED.value,
                 category = SpotCategory.ORIGINAL.value,
                 difficulty = difficulty,
@@ -94,14 +95,15 @@ class SpotRepository(
                 user_id = userId,
                 spot_id = spotId,
                 image_url = imageUrl,
-                visit_time = System.currentTimeMillis()
+                visit_time = Clock.System.now().toEpochMilliseconds()
             )
         }
     }
 
     suspend fun getSpot(spotId: Int) = withContext(Dispatchers.IO) {
         runCatching {
-            database.spotQueries.selectById(spotId).executeAsOneOrNull()
+            val entity = database.spotQueries.selectById(spotId).executeAsOne()
+            Spot.fromTable(entity)
         }
     }
 

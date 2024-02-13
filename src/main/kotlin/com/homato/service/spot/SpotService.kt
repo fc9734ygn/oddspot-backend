@@ -9,8 +9,10 @@ import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotRepository
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
+import kotlinx.datetime.Clock
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
+import kotlin.time.Duration.Companion.days
 
 @Singleton
 class SpotService(
@@ -54,18 +56,39 @@ class SpotService(
         spotId: Int,
         filePath: String,
         fileContentType: ContentType
-    ): Result<Unit, Throwable> {
+    ): Result<Unit, VisitSpotError> {
         val url = fileRepository.uploadImageToBucket(filePath, fileContentType)
             .getOrElse {
-                return Err(it)
+                return Err(VisitSpotError.ImageUpload)
             }
+
         val spot = spotRepository.getSpot(spotId).getOrElseNotNull {
-            return Err(it ?: Throwable("Spot not found"))
+            return Err(VisitSpotError.SpotNotFound)
         }
-        if (!spot.is_active) {
-            return Err(Throwable("Spot is not active"))
+
+        if (!spot.isActive) {
+            return Err(VisitSpotError.SpotInactive)
         }
-        return spotRepository.visitSpot(userId, spotId, url)
+
+        val mostRecentVisit = spotRepository.getAllUserVisits(userId)
+            .getOrElse {
+                return Err(VisitSpotError.Generic)
+            }
+            .filter { it.spot_id == spotId }
+            .maxByOrNull { it.visit_time }
+
+        val spotVisitCooldown = 1.days
+        val lastValidVisitTime = Clock.System.now().minus(spotVisitCooldown).toEpochMilliseconds()
+
+        if (mostRecentVisit != null && mostRecentVisit.visit_time > lastValidVisitTime) {
+            return Err(VisitSpotError.SpotRecentlyVisited)
+        }
+
+        spotRepository.visitSpot(userId, spotId, url).getOrElse {
+            return Err(VisitSpotError.Generic)
+        }
+
+        return Ok(Unit)
     }
 
     suspend fun getSubmittedSpots(userId: String): Result<SubmittedSpotsResponse, Throwable> {
