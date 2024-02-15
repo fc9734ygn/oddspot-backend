@@ -33,7 +33,6 @@ fun Route.register() {
         }
 
         val result = authService.register(
-            username = request.username,
             email = request.email,
             password = request.password
         )
@@ -52,6 +51,11 @@ fun Route.register() {
 
                     RegisterError.UserAlreadyExists -> call.respond(
                         HttpStatusCode.Conflict, "User already exists"
+                    )
+
+                    RegisterError.Generic -> call.respond(
+                        HttpStatusCode.InternalServerError,
+                        "Something went wrong"
                     )
                 }
             }

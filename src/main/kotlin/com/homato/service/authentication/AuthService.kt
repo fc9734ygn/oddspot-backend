@@ -3,8 +3,9 @@ package com.homato.service.authentication
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.mapError
+import com.github.michaelbull.result.fold
 import com.homato.data.repository.UserRepository
+import com.homato.data.util.PostgreSQLErrorCode
 import com.homato.service.authentication.hashing.HashingService
 import com.homato.service.authentication.hashing.SaltedHash
 import com.homato.service.authentication.token.TokenClaim
@@ -13,17 +14,18 @@ import com.homato.service.authentication.token.TokenService
 import com.homato.util.getOrElseNotNull
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
+import java.sql.SQLException
 
 @Singleton
 class AuthService(
     private val hashingService: HashingService,
     private val userRepository: UserRepository,
     private val tokenService: TokenService,
-    private val tokenConfig: TokenConfig
+    private val tokenConfig: TokenConfig,
+    private val usernameGenerator: UsernameGenerator
 ) : KoinComponent {
 
     suspend fun register(
-        username: String,
         email: String,
         password: String
     ): Result<Unit, RegisterError> {
@@ -38,15 +40,39 @@ class AuthService(
         }
 
         val saltedHash = hashingService.generateSaltedHash(password)
-        val result = userRepository.insertUser(
-            email = email,
-            username = username,
-            passwordHash = saltedHash.hash,
-            salt = saltedHash.salt
-        )
-        return result.mapError {
-            RegisterError.UserAlreadyExists
+
+        var attempt = 0
+        val maxAttempts = 5
+        while (attempt < maxAttempts) {
+            val username = usernameGenerator.generateUsername()
+            val result = userRepository.insertUser(
+                email = email,
+                username = username,
+                passwordHash = saltedHash.hash,
+                salt = saltedHash.salt
+            )
+
+            result.fold(
+                success = {
+                    return Ok(Unit)
+                },
+                failure = {
+                    if (it !is SQLException) {
+                        return Err(RegisterError.Generic)
+                    } else {
+                        val errorCode = PostgreSQLErrorCode.fromCode(it.sqlState)
+                        if (errorCode != PostgreSQLErrorCode.UNIQUE_VIOLATION) {
+                            return Err(RegisterError.Generic)
+                        } else {
+                            // If it's a unique violation, try again with a new username
+                            attempt++
+                        }
+                    }
+                }
+            )
         }
+
+        return Err(RegisterError.UserAlreadyExists)
     }
 
     suspend fun login(email: String, password: String): Result<String, LoginError> {
