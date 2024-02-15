@@ -25,4 +25,8 @@ class ProfileService(
             id = id
         ).mapError { it.toUsernameChangeError() }
     }
+
+    suspend fun deleteAccount(userId: String) : Result<Unit, Throwable> {
+        return userRepository.deleteAccount(userId)
+    }
 }

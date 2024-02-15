@@ -4,6 +4,9 @@ import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
 import com.homato.data.model.request.UsernameChangeRequest
+import com.homato.routes.util.COLLECTION_PROFILE
+import com.homato.routes.util.VERSION_1
+import com.homato.routes.util.getUserId
 import com.homato.service.profile.ProfileService
 import com.homato.service.profile.UsernameChangeError.*
 import com.homato.util.getOrElseNotNull
@@ -57,6 +60,29 @@ fun Route.changeUsername() {
                         )
                     }
                 }
+            )
+        }
+    }
+}
+
+fun Route.deleteAccount() {
+    val profileService: ProfileService by inject()
+
+    authenticate {
+        delete("$VERSION_1/$COLLECTION_PROFILE/delete-account") {
+
+            val userId = getUserId(call).getOrElse {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@delete
+            }
+
+            val result = profileService.deleteAccount(
+                userId = userId
+            )
+
+            result.fold(
+                success = { call.respond(HttpStatusCode.OK) },
+                failure = { call.respond(HttpStatusCode.InternalServerError, "Something went wrong") }
             )
         }
     }

@@ -7,6 +7,9 @@ import com.github.michaelbull.result.runCatching
 import com.homato.data.model.request.LoginRequest
 import com.homato.data.model.request.RegisterRequest
 import com.homato.data.model.response.AuthResponse
+import com.homato.routes.util.COLLECTION_AUTH
+import com.homato.routes.util.VERSION_1
+import com.homato.routes.util.getUserId
 import com.homato.service.authentication.AuthService
 import com.homato.service.authentication.LoginError
 import com.homato.service.authentication.RegisterError

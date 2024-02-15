@@ -8,10 +8,14 @@ CREATE TABLE IF NOT EXISTS visit (
     FOREIGN KEY (user_id) REFERENCES "user"(id)
 );
 
-
 insert:
 INSERT INTO visit (spot_id, user_id, visit_time, image_url)
 VALUES (?, ?, ?, ?);
 
 selectAllWhereUserId:
 SELECT * FROM visit WHERE user_id = ?;
+
+updateVisitsForDeletedUser:
+UPDATE visit
+SET user_id = ?
+WHERE user_id = ?;

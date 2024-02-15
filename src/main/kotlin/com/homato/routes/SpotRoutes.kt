@@ -4,8 +4,9 @@ import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.getOrElse
 import com.homato.data.model.request.SubmitSpotRequest
 import com.homato.data.model.request.VisitSpotRequest
+import com.homato.routes.util.*
 import com.homato.service.spot.SpotService
-import com.homato.service.spot.VisitSpotError
+import com.homato.service.spot.VisitSpotError.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -107,11 +108,11 @@ fun Route.visitSpot() {
                 },
                 failure = {
                     val errorResponse = when(it){
-                        VisitSpotError.Generic -> HttpStatusCode.InternalServerError to "Failed"
-                        VisitSpotError.ImageUpload -> HttpStatusCode.InternalServerError to "Failed to upload image"
-                        VisitSpotError.SpotInactive -> HttpStatusCode.BadRequest to "Spot is inactive"
-                        VisitSpotError.SpotNotFound -> HttpStatusCode.NotFound to "Spot not found"
-                        VisitSpotError.SpotRecentlyVisited -> HttpStatusCode.BadRequest to "Spot recently visited"
+                        Generic -> HttpStatusCode.InternalServerError to "Failed"
+                        ImageUpload -> HttpStatusCode.InternalServerError to "Failed to upload image"
+                        SpotInactive -> HttpStatusCode.BadRequest to "Spot is inactive"
+                        SpotNotFound -> HttpStatusCode.NotFound to "Spot not found"
+                        SpotRecentlyVisited -> HttpStatusCode.BadRequest to "Spot recently visited"
                     }
                     call.respond(errorResponse.first, errorResponse.second)
                 }

@@ -15,3 +15,11 @@ VALUES (?, ?, ?, ?, ?);
 
 changeUsername:
 UPDATE "user" SET username = ? WHERE id = ?;
+
+createDeletedUserIfNeeded:
+INSERT INTO "user"(id, email, username, password_hash, salt)
+VALUES (?, ?, ?, ?, ?)
+ON CONFLICT DO NOTHING;
+
+deleteUser:
+DELETE FROM "user" WHERE id = ?;

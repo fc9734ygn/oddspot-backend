@@ -1,4 +1,4 @@
-package com.homato.routes
+package com.homato.routes.util
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok

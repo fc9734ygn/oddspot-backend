@@ -1,4 +1,4 @@
-package com.homato.routes
+package com.homato.routes.util
 
 // Versions
 const val VERSION_1 = "v1"

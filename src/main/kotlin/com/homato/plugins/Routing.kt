@@ -21,5 +21,6 @@ fun Application.configureRouting() {
 
         // Profile
         changeUsername()
+        deleteAccount()
     }
 }
