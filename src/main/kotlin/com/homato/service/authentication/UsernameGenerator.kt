@@ -7,7 +7,11 @@ import org.koin.core.component.KoinComponent
 class UsernameGenerator : KoinComponent {
 
     fun generateUsername(): String {
-        return predefinedUsernames.random() + (1..9999).random()
+        return predefinedUsernames.random() + (1..USERNAME_PREFIX_MAX).random()
+    }
+
+    companion object {
+        const val USERNAME_PREFIX_MAX = 9999
     }
 
     private val predefinedUsernames = listOf(

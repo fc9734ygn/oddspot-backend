@@ -23,3 +23,6 @@ ON CONFLICT DO NOTHING;
 
 deleteUser:
 DELETE FROM "user" WHERE id = ?;
+
+selectByUsername:
+SELECT * FROM "user" WHERE username = ?;

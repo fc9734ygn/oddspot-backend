@@ -1,9 +1,6 @@
 package com.homato.service.authentication
 
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.fold
+import com.github.michaelbull.result.*
 import com.homato.data.repository.UserRepository
 import com.homato.data.util.PostgreSQLErrorCode
 import com.homato.service.authentication.hashing.HashingService
@@ -41,38 +38,47 @@ class AuthService(
 
         val saltedHash = hashingService.generateSaltedHash(password)
 
+        val username = createUniqueUsername().getOrElse {
+            return Err(RegisterError.Generic)
+        }
+
+        val result = userRepository.insertUser(
+            email = email,
+            username = username,
+            passwordHash = saltedHash.hash,
+            salt = saltedHash.salt
+        )
+
+        return result.mapError {
+            val isUniqueConstraintsViolation = it is SQLException &&
+                    PostgreSQLErrorCode.fromCode(it.sqlState) == PostgreSQLErrorCode.UNIQUE_VIOLATION
+            if (isUniqueConstraintsViolation) {
+                return Err(RegisterError.UserAlreadyExists)
+            } else {
+                return Err(RegisterError.Generic)
+            }
+        }
+    }
+
+    private suspend fun createUniqueUsername(): Result<String, Throwable> {
         var attempt = 0
-        val maxAttempts = 5
+        val maxAttempts = UNIQUE_USERNAME_ATTEMPTS_MAX
         while (attempt < maxAttempts) {
             val username = usernameGenerator.generateUsername()
-            val result = userRepository.insertUser(
-                email = email,
-                username = username,
-                passwordHash = saltedHash.hash,
-                salt = saltedHash.salt
-            )
-
-            result.fold(
-                success = {
-                    return Ok(Unit)
+            userRepository.checkExistenceByUsername(username).fold(
+                success = { alreadyExists ->
+                    if (alreadyExists) {
+                        attempt++
+                    } else {
+                        return Ok(username)
+                    }
                 },
                 failure = {
-                    if (it !is SQLException) {
-                        return Err(RegisterError.Generic)
-                    } else {
-                        val errorCode = PostgreSQLErrorCode.fromCode(it.sqlState)
-                        if (errorCode != PostgreSQLErrorCode.UNIQUE_VIOLATION) {
-                            return Err(RegisterError.Generic)
-                        } else {
-                            // If it's a unique violation, try again with a new username
-                            attempt++
-                        }
-                    }
+                    return Ok(username)
                 }
             )
         }
-
-        return Err(RegisterError.UserAlreadyExists)
+        return Err(Throwable("Failed to generate a unique username"))
     }
 
     suspend fun login(email: String, password: String): Result<String, LoginError> {
@@ -101,5 +107,9 @@ class AuthService(
         )
 
         return Ok(token)
+    }
+
+    companion object {
+        const val UNIQUE_USERNAME_ATTEMPTS_MAX = 10
     }
 }

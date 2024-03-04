@@ -44,6 +44,12 @@ class UserRepository(private val database: Database) : KoinComponent {
         }
     }
 
+    suspend fun checkExistenceByUsername(username: String): Result<Boolean, Throwable> = withContext(Dispatchers.IO) {
+        runCatching {
+            database.userQueries.selectByUsername(username).executeAsOneOrNull() != null
+        }
+    }
+
     suspend fun changeUsername(username: String, id: String): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
             database.userQueries.changeUsername(
