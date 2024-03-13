@@ -1,6 +1,7 @@
 package com.homato.service.authentication
 
 import com.github.michaelbull.result.*
+import com.homato.data.model.response.LoginResponse
 import com.homato.data.repository.UserRepository
 import com.homato.data.util.PostgreSQLErrorCode
 import com.homato.service.authentication.hashing.HashingService
@@ -81,7 +82,7 @@ class AuthService(
         return Err(Throwable("Failed to generate a unique username"))
     }
 
-    suspend fun login(email: String, password: String): Result<String, LoginError> {
+    suspend fun login(email: String, password: String): Result<LoginResponse, LoginError> {
         val user = userRepository.getByEmail(email).getOrElseNotNull {
             return Err(LoginError.UserNotFound)
         }
@@ -106,7 +107,15 @@ class AuthService(
             )
         )
 
-        return Ok(token)
+        return Ok(
+            LoginResponse(
+                id = user.id.toString(),
+                username = user.username,
+                imageUrl = null,
+                email = user.email,
+                jwt = token
+            )
+        )
     }
 
     companion object {

@@ -82,6 +82,20 @@ class UserRepository(private val database: Database) : KoinComponent {
         }
     }
 
+    suspend fun getUserById(id: String): Result<User?, Throwable> = withContext(Dispatchers.IO) {
+        runCatching {
+            database.userQueries.selectById(id).executeAsOneOrNull()?.let {
+                User(
+                    id = UUID.fromString(it.id),
+                    email = it.email,
+                    username = it.username,
+                    passwordHash = it.password_hash,
+                    salt = it.salt
+                )
+            }
+        }
+    }
+
     companion object {
         const val DELETED_USER_ID = "deleted_user_id"
         const val DELETED_USER_EMAIL = "deleted_user_email"

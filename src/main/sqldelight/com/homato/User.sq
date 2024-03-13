@@ -26,3 +26,6 @@ DELETE FROM "user" WHERE id = ?;
 
 selectByUsername:
 SELECT * FROM "user" WHERE username = ?;
+
+selectById:
+SELECT * FROM "user" WHERE id = ?;
