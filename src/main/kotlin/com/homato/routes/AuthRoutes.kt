@@ -1,9 +1,6 @@
 package com.homato.routes
 
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.getOrElse
-import com.github.michaelbull.result.runCatching
+import com.github.michaelbull.result.*
 import com.homato.data.model.request.LoginRequest
 import com.homato.data.model.request.RegisterRequest
 import com.homato.routes.util.COLLECTION_AUTH
@@ -75,16 +72,10 @@ fun Route.login() {
 
         val result = authService.login(request.email, request.password)
 
-        when (result) {
-            is Ok -> {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = it
-                )
-            }
-
-            is Err -> {
-                when (result.error) {
+        result.fold(
+            success = { loginResponse -> call.respond(HttpStatusCode.OK, loginResponse) },
+            failure = { error ->
+                when (error) {
                     LoginError.UserNotFound -> call.respond(
                         HttpStatusCode.NotFound, "User not found"
                     )
@@ -94,7 +85,7 @@ fun Route.login() {
                     )
                 }
             }
-        }
+        )
     }
 }
 
