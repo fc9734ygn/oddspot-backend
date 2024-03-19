@@ -2,7 +2,8 @@ package com.homato.service.spot
 
 import com.github.michaelbull.result.*
 import com.homato.data.model.request.SubmitSpotRequest
-import com.homato.data.model.response.SpotWithUserVisitsResponse
+import com.homato.data.model.response.ExploreSpotResponse
+import com.homato.data.model.response.ExploreSpotWithVisitsResponse
 import com.homato.data.model.response.SpotsFeedResponse
 import com.homato.data.model.response.SubmittedSpotsResponse
 import com.homato.data.repository.FileRepository
@@ -45,7 +46,9 @@ class SpotService(
             return Err(it)
         }
         val spotsWithVisitTimestamps = spotsWithVisits.map { spotWithVisit ->
-            SpotWithUserVisitsResponse(spotWithVisit.spot, spotWithVisit.visits.map { it.visitTime })
+            ExploreSpotWithVisitsResponse(
+                ExploreSpotResponse.fromSpot(spotWithVisit.spot),
+                spotWithVisit.visits)
         }
         val response = SpotsFeedResponse(spotsWithVisitTimestamps)
         return Ok(response)

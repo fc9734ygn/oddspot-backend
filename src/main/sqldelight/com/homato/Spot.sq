@@ -29,7 +29,7 @@ SELECT * FROM spot WHERE id = ? LIMIT 1;
 selectAllActiveSpotsWithVisitsByUserIdAndVerificationState:
 SELECT spot.*, visit.*
 FROM spot
-LEFT JOIN visit ON spot.id = visit.spot_id AND visit.user_id = ?
+LEFT JOIN visit ON spot.id = visit.spot_id
 WHERE spot.is_active = ?
 AND spot.verification_state = ?;
 

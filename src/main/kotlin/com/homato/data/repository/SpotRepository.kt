@@ -68,10 +68,9 @@ class SpotRepository(
             runCatching {
 
                 val flatQueryResults = database.spotQueries
-                    .selectAllActiveSpotsWithVisitsByUserIdAndVerificationState(
+                    .selectAllActiveSpotsWithVisitsAndVerificationState(
                         is_active = true,
                         verification_state = SpotVerificationState.VERIFIED.value,
-                        user_id = userId
                     )
                     .executeAsList()
 

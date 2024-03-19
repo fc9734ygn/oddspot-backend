@@ -57,7 +57,7 @@ fun Route.submitSpotRoute() {
 fun Route.spots() {
     val spotService: SpotService by inject()
     authenticate {
-        get("$VERSION_1/$COLLECTION_SPOT/spots") {
+        get("$VERSION_1/$COLLECTION_SPOT/spots-feed") {
             val userId = getUserId(call).getOrElse {
                 call.respond(HttpStatusCode.Unauthorized, "User not authorized")
                 return@get
