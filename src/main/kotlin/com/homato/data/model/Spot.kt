@@ -1,6 +1,6 @@
 package com.homato.data.model
 
-import com.homato.SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState
+import com.homato.SelectAllActiveSpotsWithVisitsAndVerificationState
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -35,7 +35,7 @@ data class Spot(
                 isActive = spot.is_active,
             )
         }
-        fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState): Spot = Spot(
+        fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsAndVerificationState): Spot = Spot(
             id = row.id,
             title = row.title,
             description = row.description,

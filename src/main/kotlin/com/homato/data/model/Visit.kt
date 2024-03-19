@@ -1,6 +1,6 @@
 package com.homato.data.model
 
-import com.homato.SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState
+import com.homato.SelectAllActiveSpotsWithVisitsAndVerificationState
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,7 +22,7 @@ data class Visit(
             )
         }
 
-        fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsByUserIdAndVerificationState): Visit? {
+        fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsAndVerificationState): Visit? {
             val id = row.id_ ?: return null
             val spotId = row.spot_id ?: return null
             val userId = row.user_id ?: return null
