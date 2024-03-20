@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS wishlist (
+    user_id TEXT NOT NULL,
+    spot_id INTEGER NOT NULL,
+    PRIMARY KEY (user_id, spot_id),
+    FOREIGN KEY (user_id) REFERENCES "user" (id),
+    FOREIGN KEY (spot_id) REFERENCES spot (id)
+);
+
+insertWishlistItem:
+INSERT INTO wishlist (user_id, spot_id)
+VALUES (?, ?);
+
+deleteWishlistItem:
+DELETE FROM wishlist
+WHERE user_id = ? AND spot_id = ?;
+
+selectWishlistByUserId:
+SELECT spot_id
+FROM wishlist
+WHERE user_id = ?;

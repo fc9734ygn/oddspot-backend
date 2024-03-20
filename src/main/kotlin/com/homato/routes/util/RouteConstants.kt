@@ -7,6 +7,7 @@ const val VERSION_1 = "v1"
 const val COLLECTION_SPOT = "spot"
 const val COLLECTION_AUTH = "auth"
 const val COLLECTION_PROFILE = "profile"
+const val COLLECTION_WISHLIST = "wishlist"
 
 // Multipart data
 const val MULTIPART_DATA_KEY = "data"

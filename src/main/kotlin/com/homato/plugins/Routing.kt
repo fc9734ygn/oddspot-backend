@@ -22,5 +22,10 @@ fun Application.configureRouting() {
         // Profile
         changeUsername()
         deleteAccount()
+
+        // Wishlist
+        addToWishlist()
+        removeFromWishlist()
+        getWishlist()
     }
 }
