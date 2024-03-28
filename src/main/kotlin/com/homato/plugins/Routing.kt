@@ -18,6 +18,7 @@ fun Application.configureRouting() {
         spots()
         submittedSpots()
         visitSpot()
+        reportSpot()
 
         // Profile
         changeUsername()

@@ -7,6 +7,7 @@ import com.homato.data.model.response.ExploreSpotWithVisitsResponse
 import com.homato.data.model.response.SpotsFeedResponse
 import com.homato.data.model.response.SubmittedSpotsResponse
 import com.homato.data.repository.FileRepository
+import com.homato.data.repository.SpotReportRepository
 import com.homato.data.repository.SpotRepository
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
@@ -18,7 +19,8 @@ import kotlin.time.Duration.Companion.days
 @Singleton
 class SpotService(
     private val fileRepository: FileRepository,
-    private val spotRepository: SpotRepository
+    private val spotRepository: SpotRepository,
+    private val spotReportRepository: SpotReportRepository
 ) : KoinComponent {
 
     suspend fun submitSpot(
@@ -96,5 +98,9 @@ class SpotService(
 
     suspend fun getSubmittedSpots(userId: String): Result<SubmittedSpotsResponse, Throwable> {
         return spotRepository.getSubmittedSpots(userId).map { SubmittedSpotsResponse(it) }
+    }
+
+    suspend fun reportSpot(spotId: Int, reporterId: String, reason: String): Result<Unit, Throwable> {
+        return spotReportRepository.addSpotReport(spotId, reporterId, reason)
     }
 }

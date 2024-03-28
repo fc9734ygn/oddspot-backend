@@ -2,14 +2,18 @@ package com.homato.routes
 
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.getOrElse
+import com.github.michaelbull.result.runCatching
+import com.homato.data.model.request.ReportSpotRequest
 import com.homato.data.model.request.SubmitSpotRequest
 import com.homato.data.model.request.VisitSpotRequest
 import com.homato.routes.util.*
 import com.homato.service.spot.SpotService
 import com.homato.service.spot.VisitSpotError.*
+import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
@@ -141,6 +145,39 @@ fun Route.submittedSpots() {
                 },
                 failure = {
                     call.respond(HttpStatusCode.InternalServerError, "Failed to fetch submitted spots")
+                }
+            )
+        }
+    }
+}
+
+fun Route.reportSpot() {
+    val spotService: SpotService by inject()
+    authenticate {
+        post("$VERSION_1/$COLLECTION_SPOT/report") {
+
+            val userId = getUserId(call).getOrElse {
+                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
+                return@post
+            }
+
+            val request = call.runCatching { this.receiveNullable<ReportSpotRequest>() }.getOrElseNotNull {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val result = spotService.reportSpot(
+                spotId = request.spotId,
+                reporterId = userId,
+                reason = request.reason
+            )
+
+            result.fold(
+                success = {
+                    call.respond(HttpStatusCode.OK, it)
+                },
+                failure = {
+                    call.respond(HttpStatusCode.InternalServerError, "Failed to report spot")
                 }
             )
         }
