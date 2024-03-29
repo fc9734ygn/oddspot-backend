@@ -3,7 +3,6 @@ package com.homato.data.repository
 import com.github.michaelbull.result.*
 import com.homato.BACKBLAZE_APPLICATION_KEY
 import com.homato.BACKBLAZE_APPLICATION_KEY_ID
-import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID
 import com.homato.data.model.response.backblaze.B2UploadFileResponse
 import com.homato.data.model.response.backblaze.B2UploadUrlResponse
 import com.homato.data.model.response.backblaze.BackBlazeAuthResponse
@@ -28,12 +27,14 @@ class FileRepository(
 
     suspend fun uploadImageToBucket(
         filePath: String,
-        contentType: ContentType
+        contentType: ContentType,
+        bucketId: String
     ): Result<String, Throwable> {
         val authResponse = authorizeBackBlazeAccount()
             .getOrElse { return Err(it) }
 
         val uploadUrlResponse = getUploadUrl(
+            bucketId = bucketId,
             baseApiUrl = authResponse.apiUrl,
             authorizationToken = authResponse.authorizationToken
         ).getOrElse { return Err(it) }
@@ -69,7 +70,7 @@ class FileRepository(
     }
 
     private suspend fun getUploadUrl(
-        bucketId: String = System.getenv(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID),
+        bucketId: String,
         baseApiUrl: String,
         authorizationToken: String
     ): Result<B2UploadUrlResponse, Throwable> =

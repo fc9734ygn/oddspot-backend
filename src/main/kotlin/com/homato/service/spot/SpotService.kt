@@ -1,6 +1,8 @@
 package com.homato.service.spot
 
 import com.github.michaelbull.result.*
+import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID
+import com.homato.BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID
 import com.homato.data.model.request.SubmitSpotRequest
 import com.homato.data.model.response.ExploreSpotResponse
 import com.homato.data.model.response.ExploreSpotWithVisitsResponse
@@ -29,7 +31,11 @@ class SpotService(
         creatorId: String,
         contentType: ContentType
     ): Result<Unit, Throwable> {
-        val url = fileRepository.uploadImageToBucket(filePath, contentType).getOrElse {
+        val url = fileRepository.uploadImageToBucket(
+            filePath,
+            contentType,
+            System.getenv(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID)
+        ).getOrElse {
             return Err(it)
         }
         return spotRepository.saveSpot(
@@ -50,7 +56,8 @@ class SpotService(
         val spotsWithVisitTimestamps = spotsWithVisits.map { spotWithVisit ->
             ExploreSpotWithVisitsResponse(
                 ExploreSpotResponse.fromSpot(spotWithVisit.spot),
-                spotWithVisit.visits)
+                spotWithVisit.visits
+            )
         }
         val response = SpotsFeedResponse(spotsWithVisitTimestamps)
         return Ok(response)
@@ -62,10 +69,12 @@ class SpotService(
         filePath: String,
         fileContentType: ContentType
     ): Result<Unit, VisitSpotError> {
-        val url = fileRepository.uploadImageToBucket(filePath, fileContentType)
-            .getOrElse {
-                return Err(VisitSpotError.ImageUpload)
-            }
+
+        val url = fileRepository.uploadImageToBucket(
+            filePath,
+            fileContentType,
+            System.getenv(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID)
+        ).getOrElse { return Err(VisitSpotError.ImageUpload) }
 
         val spot = spotRepository.getSpot(spotId).getOrElseNotNull {
             return Err(VisitSpotError.SpotNotFound)
