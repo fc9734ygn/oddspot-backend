@@ -23,7 +23,8 @@ fun getUserId(call: ApplicationCall): Result<String, Throwable> {
 suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
     formDataPartName: String,
     filePartName: String,
-    tempDirectory: String = TEMP_DIRECTORY
+    tempDirectory: String = TEMP_DIRECTORY,
+    onlyImagesAllowed: Boolean = true
 ): Result<MultipartData<T>, String> {
     var formData: T? = null
     var tempFile: File? = null
@@ -61,6 +62,9 @@ suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
     val immutableFormData = formData ?: return Err("Missing form data")
     val immutableFile = tempFile ?: return Err("Missing file data")
     val immutableContentType = contentType ?: return Err("Missing content type")
+    if (contentType?.match(ContentType.Image.Any) == false && onlyImagesAllowed) {
+        return Err("Only images are allowed")
+    }
 
     return Ok(MultipartData(immutableFormData, immutableFile, immutableContentType))
 }
