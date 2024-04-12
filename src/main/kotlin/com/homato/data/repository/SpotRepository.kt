@@ -25,21 +25,30 @@ class SpotRepository(
         difficulty: Int
     ) = withContext(Dispatchers.IO) {
         runCatching {
-            database.spotQueries.insert(
-                title = title,
-                description = description,
-                latitude = latitude,
-                longitude = longitude,
-                picture_url = mainImageUrl,
-                creator_id = creatorId,
-                create_time = Clock.System.now().toEpochMilliseconds(),
-                verification_state = SpotVerificationState.SUBMITTED.value,
-                category = SpotCategory.ORIGINAL.value,
-                difficulty = difficulty,
-                is_active = false,
-                num_visits = 0,
-                last_visited = null,
-            )
+            database.transaction {
+                val spotId = database.spotQueries.insert(
+                    title = title,
+                    description = description,
+                    latitude = latitude,
+                    longitude = longitude,
+                    picture_url = mainImageUrl,
+                    creator_id = creatorId,
+                    create_time = Clock.System.now().toEpochMilliseconds(),
+                    verification_state = SpotVerificationState.SUBMITTED.value,
+                    category = SpotCategory.ORIGINAL.value,
+                    difficulty = difficulty,
+                    is_active = false,
+                    num_visits = 0,
+                    last_visited = null,
+                ).executeAsOne()
+
+                database.visitQueries.insert(
+                    user_id = creatorId,
+                    spot_id = spotId,
+                    visit_time = Clock.System.now().toEpochMilliseconds(),
+                    image_url = null
+                )
+            }
         }
     }
 
@@ -52,14 +61,6 @@ class SpotRepository(
                 )
                 .executeAsList()
                 .map { Spot.fromTable(it) }
-        }
-    }
-
-    suspend fun getAllUserVisits(userId: String) = withContext(Dispatchers.IO) {
-        runCatching {
-            database.visitQueries
-                .selectAllWhereUserId(userId)
-                .executeAsList()
         }
     }
 
@@ -83,21 +84,6 @@ class SpotRepository(
                     }
             }
         }
-
-    suspend fun visitSpot(
-        userId: String,
-        spotId: Int,
-        imageUrl: String
-    ) = withContext(Dispatchers.IO) {
-        runCatching {
-            database.visitQueries.insert(
-                user_id = userId,
-                spot_id = spotId,
-                image_url = imageUrl,
-                visit_time = Clock.System.now().toEpochMilliseconds()
-            )
-        }
-    }
 
     suspend fun getSpot(spotId: Int) = withContext(Dispatchers.IO) {
         runCatching {

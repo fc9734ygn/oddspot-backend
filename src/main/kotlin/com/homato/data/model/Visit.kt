@@ -9,7 +9,7 @@ data class Visit(
     val spotId: Int,
     val userId: String,
     val visitTime: Long,
-    val imageUrl: String
+    val imageUrl: String?
 ) {
     companion object {
         fun fromTable(visit: com.homato.Visit): Visit {

@@ -11,6 +11,7 @@ import com.homato.data.model.response.SubmittedSpotsResponse
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotReportRepository
 import com.homato.data.repository.SpotRepository
+import com.homato.data.repository.VisitRepository
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import kotlinx.datetime.Clock
@@ -22,7 +23,8 @@ import kotlin.time.Duration.Companion.days
 class SpotService(
     private val fileRepository: FileRepository,
     private val spotRepository: SpotRepository,
-    private val spotReportRepository: SpotReportRepository
+    private val spotReportRepository: SpotReportRepository,
+    private val visitRepository: VisitRepository
 ) : KoinComponent {
 
     suspend fun submitSpot(
@@ -38,6 +40,7 @@ class SpotService(
         ).getOrElse {
             return Err(it)
         }
+
         return spotRepository.saveSpot(
             mainImageUrl = url,
             title = spotData.title,
@@ -84,7 +87,7 @@ class SpotService(
             return Err(VisitSpotError.SpotInactive)
         }
 
-        val mostRecentVisit = spotRepository.getAllUserVisits(userId)
+        val mostRecentVisit = visitRepository.getAllUserVisits(userId)
             .getOrElse {
                 return Err(VisitSpotError.Generic)
             }
@@ -98,7 +101,7 @@ class SpotService(
             return Err(VisitSpotError.SpotRecentlyVisited)
         }
 
-        spotRepository.visitSpot(userId, spotId, url).getOrElse {
+        visitRepository.visitSpot(userId, spotId, url).getOrElse {
             return Err(VisitSpotError.Generic)
         }
 
