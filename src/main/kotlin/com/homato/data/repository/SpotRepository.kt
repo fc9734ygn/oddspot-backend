@@ -63,7 +63,7 @@ class SpotRepository(
         }
     }
 
-    suspend fun getAllActiveAndVerifiedSpotsWithVisitsForUser(userId: String): Result<List<SpotWithVisits>, Throwable> =
+    suspend fun getAllActiveAndVerifiedSpotsWithVisits(): Result<List<SpotWithVisits>, Throwable> =
         withContext(Dispatchers.IO) {
             runCatching {
 

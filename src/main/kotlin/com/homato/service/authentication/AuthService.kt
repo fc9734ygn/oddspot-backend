@@ -75,7 +75,7 @@ class AuthService(
                     }
                 },
                 failure = {
-                    return Ok(username)
+                    return Err(Throwable("Failed to generate a unique username"))
                 }
             )
         }

@@ -83,4 +83,21 @@ class ProfileServiceTest {
         val result = service.changeUsername("new_username", "id")
         assertTrue(result is Ok)
     }
+
+    @Test
+    fun `deleteAccount() success`() = runTest {
+        coEvery { userRepository.deleteAccount(any()) } returns Ok(Unit)
+
+        val result = service.deleteAccount("id")
+        assertTrue(result is Ok)
+    }
+
+    @Test
+    fun `deleteAccount() failure`() = runTest {
+        coEvery { userRepository.deleteAccount(any()) } returns Err(Throwable())
+
+        val result = service.deleteAccount("id")
+        assertTrue(result is Err)
+    }
+
 }

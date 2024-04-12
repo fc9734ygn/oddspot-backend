@@ -49,8 +49,8 @@ class SpotService(
         )
     }
 
-    suspend fun getSpotsFeed(userId: String): Result<SpotsFeedResponse, Throwable> {
-        val spotsWithVisits = spotRepository.getAllActiveAndVerifiedSpotsWithVisitsForUser(userId).getOrElse {
+    suspend fun getSpotsFeed(): Result<SpotsFeedResponse, Throwable> {
+        val spotsWithVisits = spotRepository.getAllActiveAndVerifiedSpotsWithVisits().getOrElse {
             return Err(it)
         }
         val spotsWithVisitTimestamps = spotsWithVisits.map { spotWithVisit ->
