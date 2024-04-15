@@ -15,6 +15,9 @@ class VisitRepository(private val database: Database) {
             database.visitQueries
                 .selectAllWhereUserId(userId)
                 .executeAsList()
+                .map { visit ->
+                    com.homato.data.model.Visit.fromTable(visit)
+                }
         }
     }
 

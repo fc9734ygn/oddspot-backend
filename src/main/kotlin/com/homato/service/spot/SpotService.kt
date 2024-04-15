@@ -12,19 +12,19 @@ import com.homato.data.repository.FileRepository
 import com.homato.data.repository.SpotReportRepository
 import com.homato.data.repository.SpotRepository
 import com.homato.data.repository.VisitRepository
+import com.homato.util.Environment
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
-import kotlinx.datetime.Clock
 import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
-import kotlin.time.Duration.Companion.days
 
 @Singleton
 class SpotService(
     private val fileRepository: FileRepository,
     private val spotRepository: SpotRepository,
     private val spotReportRepository: SpotReportRepository,
-    private val visitRepository: VisitRepository
+    private val visitRepository: VisitRepository,
+    private val environment: Environment
 ) : KoinComponent {
 
     suspend fun submitSpot(
@@ -36,7 +36,7 @@ class SpotService(
         val url = fileRepository.uploadImageToBucket(
             filePath,
             contentType,
-            System.getenv(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID)
+            environment.getVariable(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID)
         ).getOrElse {
             return Err(it)
         }
@@ -76,8 +76,10 @@ class SpotService(
         val url = fileRepository.uploadImageToBucket(
             filePath,
             fileContentType,
-            System.getenv(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID)
-        ).getOrElse { return Err(VisitSpotError.ImageUpload) }
+            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID)
+        ).getOrElse {
+            return Err(VisitSpotError.ImageUpload)
+        }
 
         val spot = spotRepository.getSpot(spotId).getOrElseNotNull {
             return Err(VisitSpotError.SpotNotFound)
@@ -91,14 +93,11 @@ class SpotService(
             .getOrElse {
                 return Err(VisitSpotError.Generic)
             }
-            .filter { it.spot_id == spotId }
-            .maxByOrNull { it.visit_time }
+            .filter { it.spotId == spotId }
+            .maxByOrNull { it.visitTime }
 
-        val spotVisitCooldown = 1.days
-        val lastValidVisitTime = Clock.System.now().minus(spotVisitCooldown).toEpochMilliseconds()
-
-        if (mostRecentVisit != null && mostRecentVisit.visit_time > lastValidVisitTime) {
-            return Err(VisitSpotError.SpotRecentlyVisited)
+        if (mostRecentVisit != null) {
+            return Err(VisitSpotError.SpotVisited)
         }
 
         visitRepository.visitSpot(userId, spotId, url).getOrElse {

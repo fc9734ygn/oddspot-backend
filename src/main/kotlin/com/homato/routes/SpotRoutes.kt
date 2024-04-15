@@ -116,7 +116,7 @@ fun Route.visitSpot() {
                         ImageUpload -> HttpStatusCode.InternalServerError to "Failed to upload image"
                         SpotInactive -> HttpStatusCode.BadRequest to "Spot is inactive"
                         SpotNotFound -> HttpStatusCode.NotFound to "Spot not found"
-                        SpotRecentlyVisited -> HttpStatusCode.BadRequest to "Spot recently visited"
+                        SpotVisited -> HttpStatusCode.BadRequest to "Spot visited"
                     }
                     call.respond(errorResponse.first, errorResponse.second)
                 }
