@@ -27,7 +27,7 @@ data class Visit(
             val spotId = row.spot_id ?: return null
             val userId = row.user_id ?: return null
             val visitTime = row.visit_time ?: return null
-            val imageUrl = row.image_url ?: return null
+            val imageUrl = row.image_url
 
             // At this point, id, spotId, userId, visitTime, and imageUrl are all non-nullable
             return Visit(id, spotId, userId, visitTime, imageUrl)

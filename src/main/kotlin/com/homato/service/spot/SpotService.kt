@@ -56,13 +56,13 @@ class SpotService(
         val spotsWithVisits = spotRepository.getAllActiveAndVerifiedSpotsWithVisits().getOrElse {
             return Err(it)
         }
-        val spotsWithVisitTimestamps = spotsWithVisits.map { spotWithVisit ->
+        val data = spotsWithVisits.map { spotWithVisit ->
             ExploreSpotWithVisitsResponse(
                 ExploreSpotResponse.fromSpot(spotWithVisit.spot),
                 spotWithVisit.visits
             )
         }
-        val response = SpotsFeedResponse(spotsWithVisitTimestamps)
+        val response = SpotsFeedResponse(data)
         return Ok(response)
     }
 
