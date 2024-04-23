@@ -26,7 +26,8 @@ data class ExploreSpotResponse(
     val pictureUrl: String,
     val createTime: Long,
     val category: String,
-    val difficulty: Int
+    val difficulty: Int,
+    val isArea: Boolean
 ) {
     companion object {
         fun fromSpot(
@@ -43,6 +44,7 @@ data class ExploreSpotResponse(
                 createTime = spot.createTime,
                 category = spot.category,
                 difficulty = spot.difficulty,
+                isArea = spot.isArea
             )
         }
     }

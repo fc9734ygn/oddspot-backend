@@ -45,7 +45,7 @@ class SpotServiceTest {
     fun `submitSpot successfully submits a spot`() = runTest {
         every { environment.getVariable(any()) } returns "bucket123"
         coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok(imageUrl)
-        coEvery { spotRepository.saveSpot(any(), any(), any(), any(), any(), any(), any()) } returns Ok(Unit)
+        coEvery { spotRepository.saveSpot(any(), any(), any(), any(), any(), any(), any(), any()) } returns Ok(Unit)
 
         val result = service.submitSpot(filePath, createSpotData(), creatorId, contentType)
         assertTrue(result is Ok)
@@ -66,6 +66,7 @@ class SpotServiceTest {
         coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok(imageUrl)
         coEvery {
             spotRepository.saveSpot(
+                any(),
                 any(),
                 any(),
                 any(),

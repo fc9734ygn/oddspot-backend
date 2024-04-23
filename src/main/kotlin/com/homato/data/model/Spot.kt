@@ -17,6 +17,7 @@ data class Spot(
     val category: String,
     val difficulty: Int,
     val isActive: Boolean,
+    val isArea: Boolean
 ){
     companion object {
         fun fromTable(spot: com.homato.Spot): Spot {
@@ -33,6 +34,7 @@ data class Spot(
                 category = spot.category,
                 difficulty = spot.difficulty,
                 isActive = spot.is_active,
+                isArea = spot.is_area
             )
         }
         fun fromQueryResult(row: SelectAllActiveSpotsWithVisitsAndVerificationState): Spot = Spot(
@@ -48,6 +50,7 @@ data class Spot(
             category = row.category,
             difficulty = row.difficulty,
             isActive = row.is_active,
+            isArea = row.is_area
         )
     }
 }
