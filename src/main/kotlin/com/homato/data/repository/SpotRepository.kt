@@ -39,7 +39,7 @@ class SpotRepository(
                     category = SpotCategory.ORIGINAL.value,
                     difficulty = difficulty,
                     is_active = false,
-                    isArea = isArea
+                    is_area = isArea
                 ).executeAsOne()
 
                 database.visitQueries.insert(

@@ -1,0 +1,1 @@
+ALTER TABLE spot RENAME COLUMN isArea TO is_area;

@@ -11,12 +11,12 @@ CREATE TABLE IF NOT EXISTS spot (
     category TEXT NOT NULL,
     difficulty INTEGER NOT NULL,
     is_active BOOL NOT NULL,
-    isArea BOOLEAN NOT NULL,
+    is_area BOOLEAN NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES "user"(id)
 );
 
 insert:
-INSERT INTO spot (title,description, latitude, longitude, creator_id, picture_url, create_time, verification_state, category, difficulty, is_active, isArea)
+INSERT INTO spot (title,description, latitude, longitude, creator_id, picture_url, create_time, verification_state, category, difficulty, is_active, is_area)
 VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?) RETURNING id;
 
 selectAllWhereIsActiveAndVerificationState:
