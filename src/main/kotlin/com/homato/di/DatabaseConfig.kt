@@ -36,6 +36,8 @@ fun Application.connectToPostgresql(embedded: Boolean): Database {
     }
     val driver = dataSource.asJdbcDriver()
     Database.Schema.create(driver)
-    Database.Schema.migrate(driver, POSTGRESQL_CURRENT_VERSION.toLong() - 1, POSTGRESQL_CURRENT_VERSION.toLong())
+    if (Database.Schema.version < POSTGRESQL_CURRENT_VERSION.toLong()) {
+        Database.Schema.migrate(driver, POSTGRESQL_CURRENT_VERSION.toLong() - 1, POSTGRESQL_CURRENT_VERSION.toLong())
+    }
     return Database(driver)
 }
