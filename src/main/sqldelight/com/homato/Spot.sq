@@ -11,14 +11,12 @@ CREATE TABLE IF NOT EXISTS spot (
     category TEXT NOT NULL,
     difficulty INTEGER NOT NULL,
     is_active BOOL NOT NULL,
-    num_visits INTEGER NOT NULL DEFAULT 0, -- TODO: remove redundant field
-    last_visited BIGINT, -- TODO: remove redundant field
     FOREIGN KEY (creator_id) REFERENCES "user"(id)
 );
 
 insert:
-INSERT INTO spot (title,description, latitude, longitude, creator_id, picture_url, create_time, verification_state, category, difficulty, is_active, num_visits, last_visited)
-VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;
+INSERT INTO spot (title,description, latitude, longitude, creator_id, picture_url, create_time, verification_state, category, difficulty, is_active)
+VALUES (?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?) RETURNING id;
 
 selectAllWhereIsActiveAndVerificationState:
 SELECT * FROM spot WHERE is_active = ? AND verification_state = ?;

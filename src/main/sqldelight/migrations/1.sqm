@@ -1,0 +1,3 @@
+ALTER TABLE spot
+DROP COLUMN num_visits,
+DROP COLUMN last_visited;

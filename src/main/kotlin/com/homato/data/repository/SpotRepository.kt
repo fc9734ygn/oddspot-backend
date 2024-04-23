@@ -37,9 +37,7 @@ class SpotRepository(
                     verification_state = SpotVerificationState.SUBMITTED.value,
                     category = SpotCategory.ORIGINAL.value,
                     difficulty = difficulty,
-                    is_active = false,
-                    num_visits = 0,
-                    last_visited = null,
+                    is_active = false
                 ).executeAsOne()
 
                 database.visitQueries.insert(
