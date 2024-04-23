@@ -75,7 +75,6 @@ fun Application.connectToPostgresql(embedded: Boolean): Database {
             username = user
             password = pass
             driverClassName = DRIVER_CLASS_NAME_POSTGRESQL
-            maximumPoolSize = 30
         })
     }
     val driver = dataSource.asJdbcDriver()
