@@ -9,4 +9,5 @@ data class SubmitSpotRequest(
     val latitude : Double,
     val longitude : Double,
     val difficulty : Int,
+    val isArea: Boolean
 )

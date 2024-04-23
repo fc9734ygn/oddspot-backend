@@ -48,7 +48,8 @@ class SpotService(
             latitude = spotData.latitude,
             longitude = spotData.longitude,
             creatorId = creatorId,
-            difficulty = spotData.difficulty
+            difficulty = spotData.difficulty,
+            isArea = spotData.isArea
         )
     }
 

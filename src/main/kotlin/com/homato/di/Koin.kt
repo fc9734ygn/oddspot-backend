@@ -22,6 +22,7 @@ import org.koin.logger.slf4jLogger
 private const val JDBC_URL_H2 = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1"
 private const val DRIVER_CLASS_NAME_H2 = "org.h2.Driver"
 private const val DRIVER_CLASS_NAME_POSTGRESQL = "org.postgresql.Driver"
+private const val POSTGRESQL_CURRENT_VERSION = 2L
 
 @Module
 @ComponentScan("com.homato")
@@ -74,11 +75,12 @@ fun Application.connectToPostgresql(embedded: Boolean): Database {
             username = user
             password = pass
             driverClassName = DRIVER_CLASS_NAME_POSTGRESQL
-            maximumPoolSize = 50
+            maximumPoolSize = 30
         })
     }
     val driver = dataSource.asJdbcDriver()
     Database.Schema.create(driver)
+    Database.Schema.migrate(driver, POSTGRESQL_CURRENT_VERSION - 1, POSTGRESQL_CURRENT_VERSION)
     return Database(driver)
 }
 

@@ -22,7 +22,8 @@ class SpotRepository(
         latitude: Double,
         longitude: Double,
         creatorId: String,
-        difficulty: Int
+        difficulty: Int,
+        isArea: Boolean
     ) = withContext(Dispatchers.IO) {
         runCatching {
             database.transaction {
@@ -37,7 +38,8 @@ class SpotRepository(
                     verification_state = SpotVerificationState.SUBMITTED.value,
                     category = SpotCategory.ORIGINAL.value,
                     difficulty = difficulty,
-                    is_active = false
+                    is_active = false,
+                    isArea = isArea
                 ).executeAsOne()
 
                 database.visitQueries.insert(

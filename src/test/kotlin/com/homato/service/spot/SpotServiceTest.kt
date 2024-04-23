@@ -205,7 +205,7 @@ class SpotServiceTest {
 
     private fun createSpotData() = SubmitSpotRequest(
         title = "Nice Spot", description = "A very nice spot",
-        latitude = 40.7128, longitude = -74.0060, difficulty = 3
+        latitude = 40.7128, longitude = -74.0060, difficulty = 3, isArea = false
     )
 
     private fun mockSpotVisitSetup() {
