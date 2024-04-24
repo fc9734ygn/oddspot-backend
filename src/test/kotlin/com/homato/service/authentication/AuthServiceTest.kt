@@ -41,7 +41,7 @@ class AuthServiceTest {
     fun `register success`() = runTest {
         coEvery { usernameGenerator.generateUsername() } returns "uniqueUsername"
         coEvery { userRepository.checkExistenceByUsername(any()) } returns Ok(false)
-        coEvery { userRepository.insertUser(any(), any(), any(), any()) } returns Ok(Unit)
+        coEvery { userRepository.insertUser(any(), any(), any(), any(), any()) } returns Ok(Unit)
 
         val result = service.register("test@example.com", "StrongPassword123!")
         assertTrue(result is Ok)
@@ -63,7 +63,7 @@ class AuthServiceTest {
     fun `register when user already exists`() = runTest {
         coEvery { usernameGenerator.generateUsername() } returns "uniqueUsername"
         coEvery { userRepository.checkExistenceByUsername(any()) } returns Ok(false)
-        coEvery { userRepository.insertUser(any(), any(), any(), any()) } returns Err(
+        coEvery { userRepository.insertUser(any(), any(), any(), any(), any()) } returns Err(
             SQLException(
                 "Unique violation",
                 "23505"
@@ -87,7 +87,7 @@ class AuthServiceTest {
     fun `register with database error`() = runTest {
         coEvery { usernameGenerator.generateUsername() } returns "uniqueUsername"
         coEvery { userRepository.checkExistenceByUsername(any()) } returns Ok(false)
-        coEvery { userRepository.insertUser(any(), any(), any(), any()) } returns Err(
+        coEvery { userRepository.insertUser(any(), any(), any(), any(), any()) } returns Err(
             SQLException(
                 "Database error",
                 "55000"
@@ -116,7 +116,8 @@ class AuthServiceTest {
             username = "userTest",
             passwordHash = "hashedPassword",
             salt = "salt",
-            email = "test@example.com"
+            email = "test@example.com",
+            avatar = null
         )
         val saltedHash = SaltedHash(hash = user.passwordHash, salt = user.salt)
         val token = "generatedToken"
@@ -144,7 +145,8 @@ class AuthServiceTest {
             username = "userTest",
             passwordHash = "hashedPassword",
             salt = "salt",
-            email = "test@example.com"
+            email = "test@example.com",
+            avatar = null
         )
         val saltedHash = SaltedHash(hash = user.passwordHash, salt = user.salt)
 

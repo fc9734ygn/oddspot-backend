@@ -21,7 +21,8 @@ class UserRepository(private val database: Database) : KoinComponent {
                     email = it.email,
                     username = it.username,
                     passwordHash = it.password_hash,
-                    salt = it.salt
+                    salt = it.salt,
+                    avatar = it.avatar_url
                 )
             }
         }
@@ -31,7 +32,8 @@ class UserRepository(private val database: Database) : KoinComponent {
         email: String,
         username: String,
         passwordHash: String,
-        salt: String
+        salt: String,
+        avatarUrl: String?
     ): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
             database.userQueries.insert(
@@ -39,7 +41,8 @@ class UserRepository(private val database: Database) : KoinComponent {
                 email = email,
                 username = username,
                 password_hash = passwordHash,
-                salt = salt
+                salt = salt,
+                avatar_url = avatarUrl
             )
         }
     }
@@ -59,6 +62,15 @@ class UserRepository(private val database: Database) : KoinComponent {
         }
     }
 
+    suspend fun changeAvatar(userId: String, url: String): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
+        runCatching {
+            database.userQueries.updateAvatar(
+                avatar_url = url,
+                id = userId
+            )
+        }
+    }
+
     suspend fun deleteAccount(userId: String): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
         runCatching {
             database.userQueries.transaction {
@@ -67,7 +79,8 @@ class UserRepository(private val database: Database) : KoinComponent {
                     email = DELETED_USER_EMAIL,
                     username = DELETED_USER_USERNAME,
                     password_hash = DELETED_USER_PASSWORD_HASH,
-                    salt = DELETED_USER_SALT
+                    salt = DELETED_USER_SALT,
+                    avatar_url = null
                 )
                 database.spotQueries.updateSpotsForDeletedUser(
                     DELETED_USER_ID,
@@ -90,7 +103,8 @@ class UserRepository(private val database: Database) : KoinComponent {
                     email = it.email,
                     username = it.username,
                     passwordHash = it.password_hash,
-                    salt = it.salt
+                    salt = it.salt,
+                    avatar = it.avatar_url
                 )
             }
         }

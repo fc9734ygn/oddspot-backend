@@ -1,14 +1,14 @@
-package com.homato.routes
+package com.homato.routes.profile
 
 import com.github.michaelbull.result.fold
 import com.github.michaelbull.result.getOrElse
 import com.github.michaelbull.result.runCatching
 import com.homato.data.model.request.UsernameChangeRequest
-import com.homato.routes.util.COLLECTION_PROFILE
-import com.homato.routes.util.VERSION_1
-import com.homato.routes.util.getUserId
+import com.homato.routes.COLLECTION_PROFILE
+import com.homato.routes.VERSION_1
+import com.homato.routes.getUserId
 import com.homato.service.profile.ProfileService
-import com.homato.service.profile.UsernameChangeError.*
+import com.homato.service.profile.UsernameChangeError
 import com.homato.util.getOrElseNotNull
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -43,46 +43,23 @@ fun Route.changeUsername() {
                 success = { call.respond(HttpStatusCode.OK) },
                 failure = { error ->
                     when (error) {
-                        is InvalidUsername -> call.respond(
+                        is UsernameChangeError.InvalidUsername -> call.respond(
                             HttpStatusCode.BadRequest, "Invalid username : ${error.message}"
                         )
 
-                        UsernameAlreadyExists -> call.respond(
+                        UsernameChangeError.UsernameAlreadyExists -> call.respond(
                             HttpStatusCode.Conflict, "Username already exists"
                         )
 
-                        UserNotFound -> call.respond(
+                        UsernameChangeError.UserNotFound -> call.respond(
                             HttpStatusCode.NotFound, "User not found"
                         )
 
-                        Generic -> call.respond(
+                        UsernameChangeError.Generic -> call.respond(
                             HttpStatusCode.InternalServerError, "Something went wrong"
                         )
                     }
                 }
-            )
-        }
-    }
-}
-
-fun Route.deleteAccount() {
-    val profileService: ProfileService by inject()
-
-    authenticate {
-        delete("$VERSION_1/$COLLECTION_PROFILE/delete-account") {
-
-            val userId = getUserId(call).getOrElse {
-                call.respond(HttpStatusCode.Unauthorized, "User not authorized")
-                return@delete
-            }
-
-            val result = profileService.deleteAccount(
-                userId = userId
-            )
-
-            result.fold(
-                success = { call.respond(HttpStatusCode.OK) },
-                failure = { call.respond(HttpStatusCode.InternalServerError, "Something went wrong") }
             )
         }
     }

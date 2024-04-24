@@ -2,7 +2,10 @@ package com.homato.service.profile
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
+import com.homato.data.repository.FileRepository
 import com.homato.data.repository.UserRepository
+import com.homato.util.Environment
+import io.ktor.http.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -17,11 +20,13 @@ class ProfileServiceTest {
 
     private val userRepository: UserRepository = mockk(relaxed = true)
     private val usernameValidator: UsernameValidator = mockk(relaxed = true)
+    private val fileRepository: FileRepository = mockk(relaxed = true)
+    private val environment: Environment = mockk(relaxed = true)
     private lateinit var service: ProfileService
 
     @BeforeEach
     fun setUp() {
-        service = ProfileService(userRepository, usernameValidator)
+        service = ProfileService(userRepository, usernameValidator, fileRepository , environment)
     }
 
     @Test
@@ -98,6 +103,35 @@ class ProfileServiceTest {
 
         val result = service.deleteAccount("id")
         assertTrue(result is Err)
+    }
+
+    @Test
+    fun `changeAvatar() success`() = runTest {
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok("url")
+        coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
+
+        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+        assertTrue(result is Ok)
+    }
+
+    @Test
+    fun `changeAvatar() fails when file upload fails`() = runTest {
+        val fileUploadException = Exception("File upload failed")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Err(fileUploadException)
+        coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
+
+        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+        assertTrue(result is Err && result.error == fileUploadException)
+    }
+
+    @Test
+    fun `changeAvatar() fails when repository fails to change avatar`() = runTest {
+        val dbException = Exception("Database broke")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok("url")
+        coEvery { userRepository.changeAvatar(any(), any()) } returns Err(dbException)
+
+        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+        assertTrue(result is Err && result.error == dbException)
     }
 
 }

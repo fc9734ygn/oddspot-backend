@@ -3,22 +3,26 @@ CREATE TABLE IF NOT EXISTS "user" (
     email TEXT UNIQUE NOT NULL,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    salt TEXT NOT NULL
+    salt TEXT NOT NULL,
+    avatar_url TEXT
 );
 
 selectByEmail:
 SELECT * FROM "user" WHERE email = ?;
 
 insert:
-INSERT INTO "user" (id, email,username, password_hash, salt)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO "user" (id, email,username, password_hash, salt, avatar_url)
+VALUES (?, ?, ?, ?, ?, ?);
 
 changeUsername:
 UPDATE "user" SET username = ? WHERE id = ?;
 
+updateAvatar:
+UPDATE "user" SET avatar_url = ? WHERE id = ?;
+
 createDeletedUserIfNeeded:
-INSERT INTO "user"(id, email, username, password_hash, salt)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO "user"(id, email, username, password_hash, salt, avatar_url)
+VALUES (?, ?, ?, ?, ?, ?)
 ON CONFLICT DO NOTHING;
 
 deleteUser:

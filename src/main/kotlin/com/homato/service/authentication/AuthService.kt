@@ -47,7 +47,8 @@ class AuthService(
             email = email,
             username = username,
             passwordHash = saltedHash.hash,
-            salt = saltedHash.salt
+            salt = saltedHash.salt,
+            avatarUrl = null
         )
 
         return result.mapError {
@@ -113,7 +114,8 @@ class AuthService(
                 username = user.username,
                 imageUrl = null,
                 email = user.email,
-                jwt = token
+                jwt = token,
+                avatar = user.avatar
             )
         )
     }

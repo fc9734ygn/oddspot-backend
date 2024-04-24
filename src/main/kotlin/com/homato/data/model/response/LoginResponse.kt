@@ -9,4 +9,5 @@ data class LoginResponse(
     val imageUrl: String?,
     val email: String,
     val jwt: String,
+    val avatar: String?
 )
