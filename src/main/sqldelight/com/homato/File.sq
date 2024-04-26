@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS file (
+    file_id TEXT PRIMARY KEY NOT NULL,
+    url TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    upload_timestamp BIGINT NOT NULL,
+    bucket_id TEXT NOT NULL
+);
+
+insert:
+INSERT INTO file (file_id,url, file_name, upload_timestamp, bucket_id)
+VALUES (?, ?, ?,?, ?);
+
+selectById:
+SELECT * FROM file WHERE file_id = ?;
+
+selectByUrl:
+SELECT * FROM file WHERE url = ?;
+
+delete:
+DELETE FROM file WHERE file_id = ?;

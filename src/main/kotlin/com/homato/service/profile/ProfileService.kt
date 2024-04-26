@@ -2,6 +2,7 @@ package com.homato.service.profile
 
 import com.github.michaelbull.result.*
 import com.homato.BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_ID
+import com.homato.BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_NAME
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.UserRepository
 import com.homato.util.Environment
@@ -40,19 +41,32 @@ class ProfileService(
         fileContentType: ContentType
     ): Result<String, Throwable> {
 
-        val url = fileRepository.uploadImageToBucket(
+        val oldUserAvatarUrl = userRepository.getUserById(userId).getOrElse {
+            return Err(it)
+        }?.avatar
+
+        val newUrl = fileRepository.uploadImageToBucket(
             filePath,
             fileContentType,
-            environment.getVariable(BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_ID)
+            environment.getVariable(BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_ID),
+            environment.getVariable(BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_NAME)
         ).getOrElse {
             return Err(it)
         }
 
+        oldUserAvatarUrl?.let { avatar ->
+            fileRepository.deleteImageFromBucket(
+                fileUrl = avatar,
+            ).getOrElse {
+                return Err(it)
+            }
+        }
+
         return userRepository.changeAvatar(
             userId = userId,
-            url = url
+            url = newUrl
         ).map {
-            url
+            newUrl
         }
     }
 }

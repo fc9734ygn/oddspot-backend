@@ -2,6 +2,7 @@ package com.homato.service.profile
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
+import com.homato.data.model.User
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.UserRepository
 import com.homato.util.Environment
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.postgresql.util.PSQLException
 import org.postgresql.util.PSQLState
+import java.util.*
 
 class ProfileServiceTest {
 
@@ -26,7 +28,7 @@ class ProfileServiceTest {
 
     @BeforeEach
     fun setUp() {
-        service = ProfileService(userRepository, usernameValidator, fileRepository , environment)
+        service = ProfileService(userRepository, usernameValidator, fileRepository, environment)
     }
 
     @Test
@@ -107,30 +109,94 @@ class ProfileServiceTest {
 
     @Test
     fun `changeAvatar() success`() = runTest {
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok("url")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok("url")
         coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
+        coEvery { userRepository.getUserById(any()) } returns Ok(
+            User(
+                id = UUID.randomUUID(),
+                email = "email",
+                username = "username",
+                passwordHash = "passwordHash",
+                salt = "salt",
+                avatar = "avatar"
+            )
+        )
+        coEvery { fileRepository.deleteImageFromBucket(any()) } returns Ok(Unit)
 
-        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+        val result = service.changeAvatar("id", "filePath", ContentType.Image.JPEG)
         assertTrue(result is Ok)
     }
 
     @Test
     fun `changeAvatar() fails when file upload fails`() = runTest {
         val fileUploadException = Exception("File upload failed")
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Err(fileUploadException)
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Err(fileUploadException)
         coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
-
-        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+        coEvery { userRepository.getUserById(any()) } returns Ok(
+            User(
+                id = UUID.randomUUID(),
+                email = "email",
+                username = "username",
+                passwordHash = "passwordHash",
+                salt = "salt",
+                avatar = "avatar"
+            )
+        )
+        val result = service.changeAvatar("id", "filePath", ContentType.Image.JPEG)
         assertTrue(result is Err && result.error == fileUploadException)
     }
 
     @Test
     fun `changeAvatar() fails when repository fails to change avatar`() = runTest {
         val dbException = Exception("Database broke")
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok("url")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok("url")
         coEvery { userRepository.changeAvatar(any(), any()) } returns Err(dbException)
+        coEvery { userRepository.getUserById(any()) } returns Ok(
+            User(
+                id = UUID.randomUUID(),
+                email = "email",
+                username = "username",
+                passwordHash = "passwordHash",
+                salt = "salt",
+                avatar = "avatar"
+            )
+        )
+        coEvery { fileRepository.deleteImageFromBucket(any()) } returns Ok(Unit)
 
-        val result = service.changeAvatar("id","filePath", ContentType.Image.JPEG)
+
+        val result = service.changeAvatar("id", "filePath", ContentType.Image.JPEG)
+        assertTrue(result is Err && result.error == dbException)
+    }
+
+    @Test
+    fun `changeAvatar() fails when repository fails to fetch existing user`() = runTest {
+        val dbException = Exception("Database broke")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok("url")
+        coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
+        coEvery { userRepository.getUserById(any()) } returns Err(dbException)
+
+        val result = service.changeAvatar("id", "filePath", ContentType.Image.JPEG)
+        assertTrue(result is Err && result.error == dbException)
+    }
+
+    @Test
+    fun `changeAvatar() fails when repository fails to delete previous avatar image`() = runTest {
+        val dbException = Exception("Database broke")
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok("url")
+        coEvery { userRepository.changeAvatar(any(), any()) } returns Ok(Unit)
+        coEvery { userRepository.getUserById(any()) } returns Ok(
+            User(
+                id = UUID.randomUUID(),
+                email = "email",
+                username = "username",
+                passwordHash = "passwordHash",
+                salt = "salt",
+                avatar = "avatar"
+            )
+        )
+        coEvery { fileRepository.deleteImageFromBucket(any()) } returns Err(dbException)
+
+        val result = service.changeAvatar("id", "filePath", ContentType.Image.JPEG)
         assertTrue(result is Err && result.error == dbException)
     }
 

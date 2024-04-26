@@ -1,6 +1,5 @@
 package com.homato.data.util
 
-import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_NAME
 import java.util.*
 
 private const val BACKBLAZE_FILENAME_BYTE_LIMIT = 1024
@@ -26,7 +25,7 @@ fun generateUniqueFileName(): String {
 
 fun constructFileUrl(
     downloadUrl: String,
-    bucketName: String = System.getenv(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_NAME),
+    bucketName: String,
     fileName: String
 ): String {
     return "$downloadUrl/file/$bucketName/$fileName"

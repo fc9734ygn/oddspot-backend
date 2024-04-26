@@ -3,6 +3,7 @@ package com.homato.data.repository
 import com.github.michaelbull.result.*
 import com.homato.BACKBLAZE_APPLICATION_KEY
 import com.homato.BACKBLAZE_APPLICATION_KEY_ID
+import com.homato.Database
 import com.homato.data.model.response.backblaze.B2UploadFileResponse
 import com.homato.data.model.response.backblaze.B2UploadUrlResponse
 import com.homato.data.model.response.backblaze.BackBlazeAuthResponse
@@ -22,13 +23,15 @@ import java.io.File
 
 @Singleton
 class FileRepository(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val database: Database
 ) : KoinComponent {
 
     suspend fun uploadImageToBucket(
         filePath: String,
         contentType: ContentType,
-        bucketId: String
+        bucketId: String,
+        bucketName: String
     ): Result<String, Throwable> {
         val authResponse = authorizeBackBlazeAccount()
             .getOrElse { return Err(it) }
@@ -48,10 +51,37 @@ class FileRepository(
 
         val fileUrl = constructFileUrl(
             downloadUrl = authResponse.downloadUrl,
-            fileName = uploadFileResponse.fileName
+            fileName = uploadFileResponse.fileName,
+            bucketName = bucketName
+        )
+
+        database.fileQueries.insert(
+            file_id  = uploadFileResponse.fileId!!,
+            url  = fileUrl,
+            file_name  = uploadFileResponse.fileName,
+            upload_timestamp  = uploadFileResponse.uploadTimestamp,
+            bucket_id = bucketId,
         )
 
         return Ok(fileUrl)
+    }
+
+    suspend fun deleteImageFromBucket(
+        fileUrl: String,
+    ): Result<Unit, Throwable> {
+        val authResponse = authorizeBackBlazeAccount()
+            .getOrElse { return Err(it) }
+
+        val file = database.fileQueries.selectByUrl(fileUrl).executeAsOne()
+
+        deleteFile(
+            fileId = file.file_id,
+            authorizationToken = authResponse.authorizationToken,
+            baseApiUrl = authResponse.apiUrl,
+            fileName = file.file_name
+        ).getOrElse { return Err(it) }
+
+        return Ok(Unit)
     }
 
     private suspend fun authorizeBackBlazeAccount(
@@ -113,9 +143,29 @@ class FileRepository(
             }
         }
 
+    private suspend fun deleteFile(
+        fileId: String,
+        authorizationToken: String,
+        fileName: String,
+        baseApiUrl: String,
+    ): Result<Unit, Throwable> = withContext(Dispatchers.IO) {
+        runCatching {
+            client.post {
+                url("$baseApiUrl/$DELETE_URL_PATH")
+                headers {
+                    append(HttpHeaders.Authorization, authorizationToken)
+                }
+                parameter("fileId", fileId)
+                parameter("fileName", fileName)
+            }
+            database.fileQueries.delete(fileId)
+        }
+    }
+
     companion object {
         private const val BACKBLAZE_AUTH_URL = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account"
         private const val UPLOAD_URL_PATH = "b2api/v2/b2_get_upload_url"
+        private const val DELETE_URL_PATH = "b2api/v3/b2_delete_file_version"
         private const val BASIC_AUTH_PREFIX = "Basic"
         private const val X_BZ_FILE_NAME = "X-Bz-File-Name"
         private const val X_BZ_CONTENT_SHA1 = "X-Bz-Content-Sha1"

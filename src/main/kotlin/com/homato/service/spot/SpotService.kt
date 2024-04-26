@@ -2,7 +2,9 @@ package com.homato.service.spot
 
 import com.github.michaelbull.result.*
 import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID
+import com.homato.BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_NAME
 import com.homato.BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID
+import com.homato.BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_NAME
 import com.homato.data.model.request.SubmitSpotRequest
 import com.homato.data.model.response.ExploreSpotResponse
 import com.homato.data.model.response.ExploreSpotWithVisitsResponse
@@ -36,7 +38,8 @@ class SpotService(
         val url = fileRepository.uploadImageToBucket(
             filePath,
             contentType,
-            environment.getVariable(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID)
+            environment.getVariable(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_ID),
+            environment.getVariable(BACKBLAZE_SPOT_MAIN_IMAGE_BUCKET_NAME)
         ).getOrElse {
             return Err(it)
         }
@@ -77,7 +80,8 @@ class SpotService(
         val url = fileRepository.uploadImageToBucket(
             filePath,
             fileContentType,
-            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID)
+            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID),
+            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_NAME)
         ).getOrElse {
             return Err(VisitSpotError.ImageUpload)
         }

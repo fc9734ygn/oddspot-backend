@@ -11,7 +11,7 @@ data class B2UploadFileResponse(
     val contentLength: Long,
     val contentSha1: String?,
     val contentType: String,
-    val fileId: String?,
+    val fileId: String?, // Can only be null for folders according to documentation
     val fileName: String,
     val uploadTimestamp: Long
 )

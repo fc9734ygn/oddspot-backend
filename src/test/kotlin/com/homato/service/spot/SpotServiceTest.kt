@@ -44,7 +44,7 @@ class SpotServiceTest {
     @Test
     fun `submitSpot successfully submits a spot`() = runTest {
         every { environment.getVariable(any()) } returns "bucket123"
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok(imageUrl)
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok(imageUrl)
         coEvery { spotRepository.saveSpot(any(), any(), any(), any(), any(), any(), any(), any()) } returns Ok(Unit)
 
         val result = service.submitSpot(filePath, createSpotData(), creatorId, contentType)
@@ -54,7 +54,7 @@ class SpotServiceTest {
     @Test
     fun `submitSpot fails when image upload fails`() = runTest {
         every { environment.getVariable(any()) } returns "bucket123"
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Err(Throwable("Upload failed"))
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Err(Throwable("Upload failed"))
 
         val result = service.submitSpot(filePath, createSpotData(), creatorId, contentType)
         assertTrue(result is Err)
@@ -63,7 +63,7 @@ class SpotServiceTest {
     @Test
     fun `submitSpot fails when saving the spot fails`() = runTest {
         every { environment.getVariable(any()) } returns "bucket123"
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok(imageUrl)
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok(imageUrl)
         coEvery {
             spotRepository.saveSpot(
                 any(),
@@ -132,7 +132,7 @@ class SpotServiceTest {
     @Test
     fun `visitSpot fails when image upload fails`() = runTest {
         mockSpotVisitSetup()
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Err(Throwable("Upload failed"))
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Err(Throwable("Upload failed"))
 
         val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
         assertTrue(result is Err && result.error == VisitSpotError.ImageUpload)
@@ -210,7 +210,7 @@ class SpotServiceTest {
     )
 
     private fun mockSpotVisitSetup() {
-        coEvery { fileRepository.uploadImageToBucket(any(), any(), any()) } returns Ok(imageUrl)
+        coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Ok(imageUrl)
         coEvery { spotRepository.getSpot(any()) } returns Ok(spot)
         every { spot.isActive } returns true
         coEvery { visitRepository.getAllUserVisits(any()) } returns Ok(emptyList())
