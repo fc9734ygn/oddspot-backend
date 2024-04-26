@@ -37,7 +37,7 @@ fun Route.changeAvatar() {
 
             result.fold(
                 success = {
-                    call.respond(HttpStatusCode.OK, "Avatar changed successfully")
+                    call.respond(HttpStatusCode.OK, it)
                 },
                 failure = {
                     call.respond(HttpStatusCode.InternalServerError, "Failed to change the avatar")

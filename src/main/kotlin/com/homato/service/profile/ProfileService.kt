@@ -1,9 +1,6 @@
 package com.homato.service.profile
 
-import com.github.michaelbull.result.Err
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.getOrElse
-import com.github.michaelbull.result.mapError
+import com.github.michaelbull.result.*
 import com.homato.BACKBLAZE_SPOT_AVATAR_IMAGE_BUCKET_ID
 import com.homato.data.repository.FileRepository
 import com.homato.data.repository.UserRepository
@@ -41,7 +38,7 @@ class ProfileService(
         userId: String,
         filePath: String,
         fileContentType: ContentType
-    ): Result<Unit, Throwable> {
+    ): Result<String, Throwable> {
 
         val url = fileRepository.uploadImageToBucket(
             filePath,
@@ -54,6 +51,8 @@ class ProfileService(
         return userRepository.changeAvatar(
             userId = userId,
             url = url
-        )
+        ).map {
+            url
+        }
     }
 }
