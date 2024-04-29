@@ -33,7 +33,6 @@ The project architecture follows the Clean Architecture principles, with the fol
 - Lighter than Spring
 - Has less magic which forces me to understand concepts better.
 - Is well-supported with coroutines, serialization, Koin DI etc.
-- More modern in general.
 
 ### SQLDelight
 
