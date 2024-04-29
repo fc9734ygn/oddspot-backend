@@ -6,6 +6,10 @@ project is still in its early stages of development and has not been released ye
 become a commercial project in the future (if it works out) but also serves as a learning/portfolio
 project.
 
+The sharing of this repository is meant to showcase a real life project that is being developed with
+real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
+coverage. It is a real project that is being developed by a single developer (me) in my free time.
+
 ## Features (as of right now):
 
 - `Routing.kt` - all endpoints are defined here.
@@ -98,7 +102,8 @@ submission fails after the image is already uploaded), E2E/integration tests, ad
 
 ## How to Run:
 
-1. Add all required (all used by `com.homato.util.Environment` and `System.getenv()`) environmental variables to your environment.
+1. Add all required (all used by `com.homato.util.Environment` and `System.getenv()`) environmental variables to your
+   environment.
 2. When building the project firstly create "user" table as the initialization order starts from spot (alphabetical) and
    fails with unknown relation "user" (SQLDelight issue, I could fix it, but it's not a priority right now).
 3. Use Dockerfile in root project directory
