@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     password_hash TEXT NOT NULL,
     salt TEXT NOT NULL,
     avatar_url TEXT,
-    FOREIGN KEY (avatar_url) REFERENCES file(url)
+    FOREIGN KEY (avatar_url) REFERENCES file(url) ON DELETE SET NULL
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_email_key ON "user" (email);

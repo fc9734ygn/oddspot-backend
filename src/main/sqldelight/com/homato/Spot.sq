@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS spot (
     is_active BOOL NOT NULL,
     is_area BOOLEAN NOT NULL,
     FOREIGN KEY (creator_id) REFERENCES "user"(id),
-    FOREIGN KEY (picture_url) REFERENCES file(url)
+    FOREIGN KEY (picture_url) REFERENCES file(url) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_spot_active_verification ON spot (is_active, verification_state);

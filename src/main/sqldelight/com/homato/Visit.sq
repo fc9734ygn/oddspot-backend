@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS visit (
     image_url TEXT,
     FOREIGN KEY (spot_id) REFERENCES spot(id),
     FOREIGN KEY (user_id) REFERENCES "user"(id),
-    FOREIGN KEY (image_url) REFERENCES file (url)
+    FOREIGN KEY (image_url) REFERENCES file (url) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_visit_user ON visit (user_id);
