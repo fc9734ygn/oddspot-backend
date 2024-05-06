@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS "user" (
     FOREIGN KEY (avatar_url) REFERENCES file(url)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_email ON "user" (email);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_username ON "user" (username);
+CREATE UNIQUE INDEX IF NOT EXISTS user_email_key ON "user" (email);
+CREATE UNIQUE INDEX IF NOT EXISTS user_username_key ON "user" (username);
 
 selectByEmail:
 SELECT * FROM "user" WHERE email = ?;

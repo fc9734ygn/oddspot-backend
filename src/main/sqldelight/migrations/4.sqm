@@ -11,8 +11,8 @@ CREATE INDEX IF NOT EXISTS idx_spotreport_spot ON spotreport (spot_id);
 CREATE INDEX IF NOT EXISTS idx_spotreport_user ON spotreport (user_id);
 
 -- Indexes for user table
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_email ON "user" (email);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_user_username ON "user" (username);
+CREATE UNIQUE INDEX IF NOT EXISTS user_email_key ON "user" (email);
+CREATE UNIQUE INDEX IF NOT EXISTS user_username_key ON "user" (username);
 
 -- Indexes for visit table
 CREATE INDEX IF NOT EXISTS idx_visit_user ON visit (user_id);
