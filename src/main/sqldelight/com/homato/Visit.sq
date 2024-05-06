@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS visit (
 
 CREATE INDEX IF NOT EXISTS idx_visit_user ON visit (user_id);
 CREATE INDEX IF NOT EXISTS idx_visit_spot ON visit (spot_id);
+CREATE INDEX IF NOT EXISTS idx_visit_image_url ON visit (image_url);
 
 insert:
 INSERT INTO visit (spot_id, user_id, visit_time, image_url)

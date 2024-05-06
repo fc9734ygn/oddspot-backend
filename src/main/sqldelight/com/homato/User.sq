@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 CREATE UNIQUE INDEX IF NOT EXISTS user_email_key ON "user" (email);
 CREATE UNIQUE INDEX IF NOT EXISTS user_username_key ON "user" (username);
+CREATE INDEX IF NOT EXISTS idx_user_avatar_url ON "user" (avatar_url);
 
 selectByEmail:
 SELECT * FROM "user" WHERE email = ?;
