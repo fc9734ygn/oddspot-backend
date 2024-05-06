@@ -12,8 +12,12 @@ CREATE TABLE IF NOT EXISTS spot (
     difficulty INTEGER NOT NULL,
     is_active BOOL NOT NULL,
     is_area BOOLEAN NOT NULL,
-    FOREIGN KEY (creator_id) REFERENCES "user"(id)
+    FOREIGN KEY (creator_id) REFERENCES "user"(id),
+    FOREIGN KEY (picture_url) REFERENCES file(url)
 );
+
+CREATE INDEX IF NOT EXISTS idx_spot_active_verification ON spot (is_active, verification_state);
+CREATE INDEX IF NOT EXISTS idx_spot_creator ON spot (creator_id);
 
 insert:
 INSERT INTO spot (title,description, latitude, longitude, creator_id, picture_url, create_time, verification_state, category, difficulty, is_active, is_area)

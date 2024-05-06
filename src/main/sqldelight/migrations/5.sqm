@@ -1,0 +1,13 @@
+ALTER TABLE spot
+ADD CONSTRAINT fk_spot_picture_url
+FOREIGN KEY (picture_url) REFERENCES file (url);
+
+ALTER TABLE "user"
+ADD CONSTRAINT fk_user_avatar_url
+FOREIGN KEY (avatar_url) REFERENCES file (url)
+ON DELETE SET NULL;
+
+ALTER TABLE visit
+ADD CONSTRAINT fk_visit_image_url
+FOREIGN KEY (image_url) REFERENCES file (url)
+ON DELETE SET NULL;

@@ -8,6 +8,9 @@ CREATE TABLE IF NOT EXISTS spotreport (
     FOREIGN KEY (spot_id) REFERENCES spot(id)
 );
 
+CREATE INDEX IF NOT EXISTS idx_spotreport_spot ON spotreport (spot_id);
+CREATE INDEX IF NOT EXISTS idx_spotreport_user ON spotreport (user_id);
+
 insert:
 INSERT INTO spotreport (user_id, spot_id, reason, report_time)
 VALUES (?, ?, ?, ?);

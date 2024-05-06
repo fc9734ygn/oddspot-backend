@@ -5,8 +5,12 @@ CREATE TABLE IF NOT EXISTS visit (
     visit_time BIGINT NOT NULL,
     image_url TEXT,
     FOREIGN KEY (spot_id) REFERENCES spot(id),
-    FOREIGN KEY (user_id) REFERENCES "user"(id)
+    FOREIGN KEY (user_id) REFERENCES "user"(id),
+    FOREIGN KEY (image_url) REFERENCES file (url)
 );
+
+CREATE INDEX IF NOT EXISTS idx_visit_user ON visit (user_id);
+CREATE INDEX IF NOT EXISTS idx_visit_spot ON visit (spot_id);
 
 insert:
 INSERT INTO visit (spot_id, user_id, visit_time, image_url)

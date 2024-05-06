@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS wishlist (
     FOREIGN KEY (spot_id) REFERENCES spot (id)
 );
 
+CREATE INDEX IF NOT EXISTS idx_wishlist_user ON wishlist (user_id);
+CREATE INDEX IF NOT EXISTS idx_wishlist_spot ON wishlist (spot_id);
+
 insertWishlistItem:
 INSERT INTO wishlist (user_id, spot_id)
 VALUES (?, ?);

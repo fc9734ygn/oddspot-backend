@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS file (
     bucket_id TEXT NOT NULL
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_file_url ON file (url);
+CREATE INDEX IF NOT EXISTS idx_file_bucket ON file (bucket_id);
+
 insert:
 INSERT INTO file (file_id,url, file_name, upload_timestamp, bucket_id)
 VALUES (?, ?, ?,?, ?);

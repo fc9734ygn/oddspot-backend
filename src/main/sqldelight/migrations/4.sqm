@@ -1,23 +1,23 @@
 -- Indexes for file table
-CREATE UNIQUE INDEX idx_file_url ON file (url);
-CREATE INDEX idx_file_bucket ON file (bucket_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_file_url ON file (url);
+CREATE INDEX IF NOT EXISTS idx_file_bucket ON file (bucket_id);
 
 -- Indexes for spot table
-CREATE INDEX idx_spot_active_verification ON spot (is_active, verification_state);
-CREATE INDEX idx_spot_creator ON spot (creator_id);
+CREATE INDEX IF NOT EXISTS idx_spot_active_verification ON spot (is_active, verification_state);
+CREATE INDEX IF NOT EXISTS idx_spot_creator ON spot (creator_id);
 
 -- Indexes for spotreport table
-CREATE INDEX idx_spotreport_spot ON spotreport (spot_id);
-CREATE INDEX idx_spotreport_user ON spotreport (user_id);
+CREATE INDEX IF NOT EXISTS idx_spotreport_spot ON spotreport (spot_id);
+CREATE INDEX IF NOT EXISTS idx_spotreport_user ON spotreport (user_id);
 
 -- Indexes for user table
-CREATE UNIQUE INDEX idx_user_email ON "user" (email);
-CREATE UNIQUE INDEX idx_user_username ON "user" (username);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_email ON "user" (email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_username ON "user" (username);
 
 -- Indexes for visit table
-CREATE INDEX idx_visit_user ON visit (user_id);
-CREATE INDEX idx_visit_spot ON visit (spot_id);
+CREATE INDEX IF NOT EXISTS idx_visit_user ON visit (user_id);
+CREATE INDEX IF NOT EXISTS idx_visit_spot ON visit (spot_id);
 
 -- Indexes for wishlist table
-CREATE INDEX idx_wishlist_user ON wishlist (user_id);
-CREATE INDEX idx_wishlist_spot ON wishlist (spot_id);
+CREATE INDEX IF NOT EXISTS idx_wishlist_user ON wishlist (user_id);
+CREATE INDEX IF NOT EXISTS idx_wishlist_spot ON wishlist (spot_id);
