@@ -32,5 +32,7 @@ fun connectToPostgresql(embedded: Boolean): Database {
     }
     val driver = dataSource.asJdbcDriver()
     Database.Schema.create(driver)
+    // Uncomment when you need to migrate the database (also adjust versions)
+    // Database.Schema.migrate(driver, 6,7)
     return Database(driver)
 }

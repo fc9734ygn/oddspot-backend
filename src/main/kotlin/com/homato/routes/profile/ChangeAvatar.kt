@@ -31,8 +31,8 @@ fun Route.changeAvatar() {
 
             val result = profileService.changeAvatar(
                 userId = userId,
-                filePath = multipartData.file.absolutePath,
-                fileContentType = multipartData.contentType
+                filePath = multipartData.file!!.absolutePath,
+                fileContentType = multipartData.contentType!!
             )
 
             result.fold(

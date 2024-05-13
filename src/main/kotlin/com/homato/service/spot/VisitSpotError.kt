@@ -4,6 +4,6 @@ sealed class VisitSpotError {
     object ImageUpload : VisitSpotError()
     object SpotNotFound : VisitSpotError()
     object SpotInactive : VisitSpotError()
-    object SpotVisited : VisitSpotError()
+    object SpotAlreadyVisited : VisitSpotError()
     object Generic : VisitSpotError()
 }

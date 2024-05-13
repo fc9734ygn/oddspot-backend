@@ -160,7 +160,7 @@ class SpotServiceTest {
         )
 
         val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
-        assertTrue(result is Err && result.error == VisitSpotError.SpotVisited)
+        assertTrue(result is Err && result.error == VisitSpotError.SpotAlreadyVisited)
     }
 
     @Test

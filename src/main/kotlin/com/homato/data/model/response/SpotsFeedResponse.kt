@@ -31,7 +31,7 @@ data class ExploreSpotResponse(
 ) {
     companion object {
         fun fromSpot(
-            spot: Spot,
+            spot: Spot
         ): ExploreSpotResponse {
             return ExploreSpotResponse(
                 id = spot.id,

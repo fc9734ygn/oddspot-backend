@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS visit (
     user_id TEXT NOT NULL,
     visit_time BIGINT NOT NULL,
     image_url TEXT,
+    rating BOOLEAN NOT NULL,
     FOREIGN KEY (spot_id) REFERENCES spot(id),
     FOREIGN KEY (user_id) REFERENCES "user"(id),
     FOREIGN KEY (image_url) REFERENCES file (url) ON DELETE SET NULL
@@ -14,8 +15,8 @@ CREATE INDEX IF NOT EXISTS idx_visit_spot ON visit (spot_id);
 CREATE INDEX IF NOT EXISTS idx_visit_image_url ON visit (image_url);
 
 insert:
-INSERT INTO visit (spot_id, user_id, visit_time, image_url)
-VALUES (?, ?, ?, ?);
+INSERT INTO visit (spot_id, user_id, visit_time, image_url, rating)
+VALUES (?, ?, ?, ?,?);
 
 selectAllWhereUserId:
 SELECT * FROM visit WHERE user_id = ?;

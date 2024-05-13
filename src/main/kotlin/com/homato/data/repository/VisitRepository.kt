@@ -24,14 +24,16 @@ class VisitRepository(private val database: Database) {
     suspend fun visitSpot(
         userId: String,
         spotId: Int,
-        imageUrl: String?
+        imageUrl: String?,
+        rating: Boolean
     ) = withContext(Dispatchers.IO) {
         runCatching {
             database.visitQueries.insert(
                 user_id = userId,
                 spot_id = spotId,
                 image_url = imageUrl,
-                visit_time = Clock.System.now().toEpochMilliseconds()
+                visit_time = Clock.System.now().toEpochMilliseconds(),
+                rating = rating
             )
         }
     }

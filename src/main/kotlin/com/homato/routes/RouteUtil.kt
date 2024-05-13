@@ -22,12 +22,11 @@ fun getUserId(call: ApplicationCall): Result<String, Throwable> {
 
 // Make sure to clean up the temporary file after using the multipart data
 suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
-    // If formDataPartName is null, the formData returned will be null
-    // otherwise it's safe to assume that the formData will not be null
-    formDataPartName: String? = null,
+    formDataPartName: String? = null, // If formDataPartName is not null, returned formData will not be null
     filePartName: String,
     tempDirectory: String = TEMP_DIRECTORY,
-    onlyImagesAllowed: Boolean = true
+    onlyImagesAllowed: Boolean = true,
+    allowNullFile: Boolean = false // If allowNullFile set to false, the file returned will not be null
 ): Result<MultipartData<T?>, MultipartDataError> {
 
     val directory = File(tempDirectory)
@@ -52,7 +51,7 @@ suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
 
             is PartData.FileItem -> {
                 if (part.name == filePartName) {
-                    val fileData = extractFileData(part, directory, onlyImagesAllowed)
+                    val fileData = extractFileData(part, directory, onlyImagesAllowed, allowNullFile)
                         .getOrElse {
                             error = it
                             return@forEachPart
@@ -72,8 +71,18 @@ suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
     }
 
     if (error != null) return Err(error!!)
-    val immutableFile = tempFile ?: return Err(MissingFileData)
-    val immutableContentType = contentType ?: return Err(MissingContentType)
+
+    val immutableFile = if (!allowNullFile) {
+        tempFile ?: return Err(MissingFileData)
+    } else {
+        tempFile
+    }
+
+    val immutableContentType = if (!allowNullFile) {
+        contentType ?: return Err(MissingContentType)
+    } else {
+        contentType
+    }
 
     return Ok(MultipartData(formData, immutableFile, immutableContentType))
 }
@@ -89,8 +98,9 @@ inline fun <reified T : Any> extractFormData(
 suspend fun extractFileData(
     part: PartData.FileItem,
     directory: File,
-    onlyImagesAllowed: Boolean
-): Result<Pair<File, ContentType>, MultipartDataError> = withContext(Dispatchers.IO) {
+    onlyImagesAllowed: Boolean,
+    allowNullFile: Boolean = false
+): Result<Pair<File?, ContentType?>, MultipartDataError> = withContext(Dispatchers.IO) {
     runCatching {
         if (onlyImagesAllowed && part.contentType?.match(ContentType.Image.Any) == false) {
             return@withContext Err(OnlyImagesAllowed) // Throw an exception to be caught by runCatching
@@ -100,8 +110,7 @@ suspend fun extractFileData(
         val file = File.createTempFile(DEFAULT_FILE_PREFIX, fileName, directory).apply {
             writeBytes(fileBytes)
         }
-        val contentType = part.contentType ?: return@withContext Err(MissingContentType)
-        Pair(file, contentType)
+        Pair(file, part.contentType)
     }.mapError {
         Generic
     }
@@ -109,8 +118,8 @@ suspend fun extractFileData(
 
 data class MultipartData<T>(
     val formData: T,
-    val file: File,
-    val contentType: ContentType
+    val file: File?,
+    val contentType: ContentType?
 )
 
 sealed class MultipartDataError {

@@ -4,5 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class VisitSpotRequest(
-    val id: Int
+    val id: Int,
+    val rating: Boolean
 )

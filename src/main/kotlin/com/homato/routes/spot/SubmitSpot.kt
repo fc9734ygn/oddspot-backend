@@ -31,10 +31,10 @@ fun Route.submitSpot() {
             }
 
             val result = spotService.submitSpot(
-                filePath = multipartData.file.absolutePath,
+                filePath = multipartData.file!!.absolutePath,
                 spotData = multipartData.formData!!,
                 creatorId = userId,
-                contentType = multipartData.contentType
+                contentType = multipartData.contentType!!
             )
 
             result.fold(

@@ -73,18 +73,10 @@ class SpotService(
     suspend fun visitSpot(
         userId: String,
         spotId: Int,
-        filePath: String,
-        fileContentType: ContentType
+        filePath: String?,
+        fileContentType: ContentType?,
+        rating: Boolean,
     ): Result<Unit, VisitSpotError> {
-
-        val url = fileRepository.uploadImageToBucket(
-            filePath,
-            fileContentType,
-            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID),
-            environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_NAME)
-        ).getOrElse {
-            return Err(VisitSpotError.ImageUpload)
-        }
 
         val spot = spotRepository.getSpot(spotId).getOrElseNotNull {
             return Err(VisitSpotError.SpotNotFound)
@@ -94,18 +86,31 @@ class SpotService(
             return Err(VisitSpotError.SpotInactive)
         }
 
-        val mostRecentVisit = visitRepository.getAllUserVisits(userId)
+        val spotAlreadyVisitedByUser = visitRepository.getAllUserVisits(userId)
             .getOrElse {
                 return Err(VisitSpotError.Generic)
+            }.any {
+                it.spotId == spotId
             }
-            .filter { it.spotId == spotId }
-            .maxByOrNull { it.visitTime }
 
-        if (mostRecentVisit != null) {
-            return Err(VisitSpotError.SpotVisited)
+        if (spotAlreadyVisitedByUser) {
+            return Err(VisitSpotError.SpotAlreadyVisited)
         }
 
-        visitRepository.visitSpot(userId, spotId, url).getOrElse {
+        val url = if (filePath != null && fileContentType != null) {
+            fileRepository.uploadImageToBucket(
+                filePath,
+                fileContentType,
+                environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_ID),
+                environment.getVariable(BACKBLAZE_SPOT_VISIT_IMAGE_BUCKET_NAME)
+            ).getOrElse {
+                return Err(VisitSpotError.ImageUpload)
+            }
+        } else {
+            null
+        }
+
+        visitRepository.visitSpot(userId, spotId, url, rating).getOrElse {
             return Err(VisitSpotError.Generic)
         }
 

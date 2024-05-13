@@ -46,7 +46,8 @@ class SpotRepository(
                     user_id = creatorId,
                     spot_id = spotId,
                     visit_time = Clock.System.now().toEpochMilliseconds(),
-                    image_url = null
+                    image_url = null,
+                    rating = true
                 )
             }
         }

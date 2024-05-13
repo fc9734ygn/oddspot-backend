@@ -25,17 +25,19 @@ fun Route.visitSpot() {
 
             val multipartData = call.extractMultipartData<VisitSpotRequest>(
                 formDataPartName = MULTIPART_DATA_KEY,
-                filePartName = MULTIPART_IMAGE_KEY
+                filePartName = MULTIPART_IMAGE_KEY,
+                allowNullFile = true
             ).getOrElse {
                 call.respond(HttpStatusCode.BadRequest, it)
                 return@post
             }
 
             val result = spotService.visitSpot(
-                filePath = multipartData.file.absolutePath,
+                filePath = multipartData.file?.absolutePath,
                 userId = userId,
                 spotId = multipartData.formData!!.id,
-                fileContentType = multipartData.contentType
+                fileContentType = multipartData.contentType,
+                rating = multipartData.formData.rating,
             )
 
             result.fold(
@@ -43,19 +45,19 @@ fun Route.visitSpot() {
                     call.respond(HttpStatusCode.OK, "Spot visit recorded successfully")
                 },
                 failure = {
-                    val errorResponse = when(it){
+                    val errorResponse = when (it) {
                         VisitSpotError.Generic -> HttpStatusCode.InternalServerError to "Failed"
                         VisitSpotError.ImageUpload -> HttpStatusCode.InternalServerError to "Failed to upload image"
                         VisitSpotError.SpotInactive -> HttpStatusCode.BadRequest to "Spot is inactive"
                         VisitSpotError.SpotNotFound -> HttpStatusCode.NotFound to "Spot not found"
-                        VisitSpotError.SpotVisited -> HttpStatusCode.BadRequest to "Spot visited"
+                        VisitSpotError.SpotAlreadyVisited -> HttpStatusCode.BadRequest to "Spot already visited"
                     }
                     call.respond(errorResponse.first, errorResponse.second)
                 }
             )
 
             // Cleanup of the temporary file
-            multipartData.file.delete()
+            multipartData.file?.delete()
         }
     }
 }

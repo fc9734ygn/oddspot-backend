@@ -9,7 +9,8 @@ data class Visit(
     val spotId: Int,
     val userId: String,
     val visitTime: Long,
-    val imageUrl: String?
+    val imageUrl: String?,
+    val rating: Boolean
 ) {
     companion object {
         fun fromTable(visit: com.homato.Visit): Visit {
@@ -18,7 +19,8 @@ data class Visit(
                 spotId = visit.spot_id,
                 userId = visit.user_id,
                 visitTime = visit.visit_time,
-                imageUrl = visit.image_url
+                imageUrl = visit.image_url,
+                rating = visit.rating
             )
         }
 
@@ -28,9 +30,10 @@ data class Visit(
             val userId = row.user_id ?: return null
             val visitTime = row.visit_time ?: return null
             val imageUrl = row.image_url
+            val rating = row.rating ?: return null
 
             // At this point, id, spotId, userId, visitTime, and imageUrl are all non-nullable
-            return Visit(id, spotId, userId, visitTime, imageUrl)
+            return Visit(id, spotId, userId, visitTime, imageUrl, rating)
         }
     }
 }
