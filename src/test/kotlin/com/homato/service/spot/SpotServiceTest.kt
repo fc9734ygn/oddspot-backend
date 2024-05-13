@@ -32,6 +32,7 @@ class SpotServiceTest {
 
     private val filePath = "path/to/image.jpg"
     private val contentType = ContentType.Image.JPEG
+    private val rating = true
     private val creatorId = "user123"
     private val imageUrl = "http://example.com/uploaded.jpg"
     private val spot: Spot = mockk(relaxed = true)
@@ -92,7 +93,8 @@ class SpotServiceTest {
                         userId = "user1",
                         spotId = 1,
                         visitTime = Clock.System.now().minus(1.days).toEpochMilliseconds(),
-                        imageUrl = null
+                        imageUrl = null,
+                        rating = true
                     )
                 )
             )
@@ -114,9 +116,9 @@ class SpotServiceTest {
     @Test
     fun `visitSpot successfully records a spot visit`() = runTest {
         mockSpotVisitSetup()
-        coEvery { visitRepository.visitSpot(any(), any(), any()) } returns Ok(Unit)
+        coEvery { visitRepository.visitSpot(any(), any(), any(), any()) } returns Ok(Unit)
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Ok)
     }
 
@@ -125,7 +127,7 @@ class SpotServiceTest {
         mockSpotVisitSetup()
         every { spot.isActive } returns false
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Err && result.error == VisitSpotError.SpotInactive)
     }
 
@@ -134,7 +136,7 @@ class SpotServiceTest {
         mockSpotVisitSetup()
         coEvery { fileRepository.uploadImageToBucket(any(), any(), any(), any()) } returns Err(Throwable("Upload failed"))
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Err && result.error == VisitSpotError.ImageUpload)
     }
 
@@ -143,7 +145,7 @@ class SpotServiceTest {
         mockSpotVisitSetup()
         coEvery { visitRepository.getAllUserVisits(any()) } returns Err(Throwable("Spot fetch error"))
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Err && result.error == VisitSpotError.Generic)
     }
 
@@ -159,16 +161,16 @@ class SpotServiceTest {
             )
         )
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Err && result.error == VisitSpotError.SpotAlreadyVisited)
     }
 
     @Test
     fun `visitSpot fails when repository visitSpot call fails`() = runTest {
         mockSpotVisitSetup()
-        coEvery { visitRepository.visitSpot(any(), any(), any()) } returns Err(Throwable("Database error"))
+        coEvery { visitRepository.visitSpot(any(), any(), any(), any()) } returns Err(Throwable("Database error"))
 
-        val result = service.visitSpot(creatorId, spot.id, filePath, contentType)
+        val result = service.visitSpot(creatorId, spot.id, filePath, contentType, rating)
         assertTrue(result is Err && result.error == VisitSpotError.Generic)
     }
 
@@ -214,6 +216,6 @@ class SpotServiceTest {
         coEvery { spotRepository.getSpot(any()) } returns Ok(spot)
         every { spot.isActive } returns true
         coEvery { visitRepository.getAllUserVisits(any()) } returns Ok(emptyList())
-        coEvery { visitRepository.visitSpot(any(), any(), any()) } returns Ok(Unit)
+        coEvery { visitRepository.visitSpot(any(), any(), any(), any()) } returns Ok(Unit)
     }
 }
