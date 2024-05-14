@@ -51,7 +51,7 @@ suspend inline fun <reified T : Any> ApplicationCall.extractMultipartData(
 
             is PartData.FileItem -> {
                 if (part.name == filePartName) {
-                    val fileData = extractFileData(part, directory, onlyImagesAllowed, allowNullFile)
+                    val fileData = extractFileData(part, directory, onlyImagesAllowed)
                         .getOrElse {
                             error = it
                             return@forEachPart
@@ -99,7 +99,6 @@ suspend fun extractFileData(
     part: PartData.FileItem,
     directory: File,
     onlyImagesAllowed: Boolean,
-    allowNullFile: Boolean = false
 ): Result<Pair<File?, ContentType?>, MultipartDataError> = withContext(Dispatchers.IO) {
     runCatching {
         if (onlyImagesAllowed && part.contentType?.match(ContentType.Image.Any) == false) {
