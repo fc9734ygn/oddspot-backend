@@ -9,6 +9,8 @@ The sharing of this repository is meant to showcase a real life project that is 
 real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
 coverage. It is a real project that is being developed by a single developer (me) in my free time.
 
+The front end repository will be made opensource soon.
+
 ## Features (as of right now):
 
 - `Routing.kt` - all endpoints are defined here.
