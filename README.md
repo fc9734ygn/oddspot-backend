@@ -9,7 +9,7 @@ The sharing of this repository is meant to showcase a real life project that is 
 real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
 coverage. It is a real project that is being developed by a single developer (me) in my free time.
 
-The front end repository will be made opensource soon.
+The front-end repository will be made open-source soon.
 
 ## Features (as of right now):
 
@@ -116,4 +116,4 @@ submission fails after the image is already uploaded), E2E/integration tests, ad
    fails with unknown relation "user" (SQLDelight issue, I could fix it, but it's not a priority right now).
 3. Use Dockerfile in root project directory
 
-Last update: 2024-04-18
+Last update: 2024-06-20
