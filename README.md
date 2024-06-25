@@ -9,7 +9,7 @@ The sharing of this repository is meant to showcase a real-life project that is 
 real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
 coverage. It is a real project being developed by a single developer (me) in my free time.
 
-The front-end repository will be made open-source soon.
+Frontend repository - https://github.com/fc9734ygn/oddspot-app
 
 ## Features (as of right now):
 
