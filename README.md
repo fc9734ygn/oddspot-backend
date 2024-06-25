@@ -2,12 +2,12 @@
 
 Oddspot is a Kotlin (Android + iOS + Backend) project that aims to provide a platform for sharing
 and discovering interesting spots around the world that aren't commercial establishments. The
-project is still in its early stages of development and has not been released yet. It serves as a learning/portfolio
+project is in its early stages of development and has not been released yet. It serves as a learning/portfolio
 project.
 
-The sharing of this repository is meant to showcase a real life project that is being developed with
+The sharing of this repository is meant to showcase a real-life project that is being developed with
 real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
-coverage. It is a real project that is being developed by a single developer (me) in my free time.
+coverage. It is a real project being developed by a single developer (me) in my free time.
 
 The front-end repository will be made open-source soon.
 
@@ -31,6 +31,13 @@ The project architecture follows the Clean Architecture principles, with the fol
 * service (domain)
 * routes (controllers)
 
+### Note on the service layer:
+Coming from an Android background where we usually use UseCases/Interactors in the domain layer I may have coupled the domain layer in a slightly incorrect way.
+The service classes as of right now represent the business logic layer for each endpoint collection which couples different data types and functionalities into
+a single class which violates the single responsibility principle.
+What I could have done, was to create an orchestration layer between the controller and service layer that would construct the response using data from services that would contain logic specific to the data type (e.g. User, Spot).
+Or I could have used UseCase files containing a single function representing an endpoint.
+
 ## Technologies and Frameworks (and opinions):
 
 ### Ktor
@@ -39,9 +46,8 @@ The project architecture follows the Clean Architecture principles, with the fol
 
 - Kotlin idiomatic framework.
 - I can use the same network client library for frontend and backend.
-- Lighter than Spring
 - Has less magic which forces me to understand concepts better.
-- Is well-supported with coroutines, serialization, Koin DI etc.
+- Is well-supported with coroutines, serialization, Koin DI etc. that I'm already used to coming from Android.
 
 ### SQLDelight
 
@@ -98,15 +104,13 @@ The files are hosted on Backblaze B2 buckets.
 ## Tests:
 
 The features have been changing a lot which resulted in me writing tests after a while of the feature being
-implemented. For starters, I've added unit tests for the domain layer. I'm planning to add more tests as
-the project progresses.
+implemented. For starters, I've added unit tests for the domain layer. I'm planning to add integration tests as a top priority.
 
 ## Future Enhancements:
 
 The project is still in its early stages, and there are a lot of things that need to be done.
-Unfortunately, the task board is private but for the most part right now it consists of additional
-features and some technical improvements - HTTPS, adding a cron job to delete trash uploads (when for example spot
-submission fails after the image is already uploaded), E2E/integration tests, add CI/CD, etc.
+Unfortunately, the task board is private but for the most part, right now it consists of additional
+features and some technical improvements - HTTPS, corrupted uploaded files cleanup, E2E/integration tests, add CI/CD, etc.
 
 ## How to Run:
 
@@ -116,4 +120,4 @@ submission fails after the image is already uploaded), E2E/integration tests, ad
    fails with unknown relation "user" (SQLDelight issue, I could fix it, but it's not a priority right now).
 3. Use Dockerfile in root project directory
 
-Last update: 2024-06-20
+Last update: 2024-06-25
