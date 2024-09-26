@@ -1,13 +1,11 @@
 # Oddspot Backend
 
 Oddspot is a Kotlin (Android + iOS + Backend) project that aims to provide a platform for sharing
-and discovering interesting spots around the world that aren't commercial establishments. The
-project is in its early stages of development and has not been released yet. It serves as a learning/portfolio
-project.
+and discovering interesting spots around the world that aren't commercial establishments.
+The project is meant to be an experiment to learn about different use-cases of Kotlin language.
 
-The sharing of this repository is meant to showcase a real-life project that is being developed with
-real problems/sacrifices. It may not be the cleanest architecturally or have the largest test
-coverage. It is a real project being developed by a single developer (me) in my free time.
+It may not be the cleanest architecturally or have the largest test
+coverage as it is being developed by a single developer (me) in my free time.
 
 Frontend repository - https://github.com/fc9734ygn/oddspot-app
 
