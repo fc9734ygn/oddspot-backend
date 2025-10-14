@@ -9,6 +9,8 @@ coverage as it is being developed by a single developer (me) in my free time.
 
 Frontend repository - https://github.com/fc9734ygn/oddspot-app
 
+UPDATE 2025 - Some opinions on tech have changed, I wouldn't do it the way it's in this repository :D
+
 ## Features (as of right now):
 
 - `Routing.kt` - all endpoints are defined here.
@@ -88,9 +90,7 @@ Interesting read: [The Result Monad](https://adambennett.dev/2020/05/the-result-
 
 ### Postgresql
 
-- Was deciding between MySQL and Postgresql and decided to go with Postgresql simply because of people on the internet
-  saying
-  it's better.
+- Was deciding between MySQL and Postgresql and decided to go with Postgresql.
 
 ## Hosting
 
