@@ -1,6 +1,6 @@
 # Oddspot Backend
 
-### No longer maintained
+### NO LONGER MAINTAINED
 
 Oddspot is a Kotlin (Android + iOS + Backend) project that aims to provide a platform for sharing
 and discovering interesting spots around the world that aren't commercial establishments.
